@@ -1,0 +1,6 @@
+{
+  "run": "cd \"/home/learning_node_js_with_procademy\" && node app.js",
+  "run_release": "cd \"/home/learning_node_js_with_procademy\" && quarks run --release",
+  "build": "cd \"/home/learning_node_js_with_procademy\" && quarks build",
+  "build_release": "cd \"/home/learning_node_js_with_procademy\" && quarks build --release"
+}

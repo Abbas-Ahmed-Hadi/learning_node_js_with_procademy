@@ -1,0 +1,1 @@
+This is a simple text file, and i will read and write into it using Node.js.
