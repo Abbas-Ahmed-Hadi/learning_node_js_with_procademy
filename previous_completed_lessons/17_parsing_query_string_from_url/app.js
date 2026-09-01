@@ -1,9 +1,12 @@
-// 12- Creating Routes in Node.js
+// 17- Parsing Query String from URL.
 import http from "http";
 import fs from "fs/promises";
+import url from "url";
 
 const server = http.createServer(async (req, res) => {
-    const path = req.url?.toLowerCase() ?? "";
+    const {query: queryStr, pathname} = url.parse(req.url, true);
+    
+    const path = pathname?.toLowerCase() ?? "";
 
     console.log("Request path:", path);
 
@@ -39,12 +42,12 @@ const server = http.createServer(async (req, res) => {
         res.end(about_css);
     }
     else {
-        res.setHeader("Content-Type", "text/html");
-        res.statusCode = 200;
-        res.end("<h1>Default Response</h1>");
+        res.setHeader("Content-Type", "plain/text");
+        res.statusCode = 404;
+        res.end("Page not found!");
     }
 });
 
 server.listen(3000, "127.0.0.1", () => {
     console.log("Server is Starting...");
-})
+});
