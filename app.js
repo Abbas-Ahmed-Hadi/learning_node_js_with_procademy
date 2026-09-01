@@ -1,16 +1,28 @@
 // 8- Createing A Simple Web Server
 import http from "http";
 
-const server = http.createServer((_, res) => {
-    console.log("Request is received");
+var conutOfRequests = 0;
+
+const server = http.createServer((req, res) => {
+    conutOfRequests += 1;
+    // console.log("Request is received:", conutOfRequests);
+    console.log(
+        "Request:",
+        conutOfRequests,
+        req.method,
+        req.url
+    );
     
     res.writeHead(200, {
-        'Content-Type': "application/json"
+        // 'Content-Type': "application/json"
+        'Content-Type': "text/html"
     });
     
-    res.end(JSON.stringify({
-        data: "Hello, World!"
-    }));
+    // res.end(JSON.stringify({
+    //     data: "Hello, World!"
+    // }));
+    
+    res.end("<h1>This is The Home Page</h1>")
 });
 
 
