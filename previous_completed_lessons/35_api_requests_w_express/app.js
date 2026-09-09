@@ -1,12 +1,11 @@
 const express = require("express");
-const fs = require("fs");
 const fsp = require("fs/promises");
-
+const fs = require("fs");
 
 const usersData = (function() {
     try {
         return fs.readFileSync(
-            "./users_data.json",
+            "./data/users.json",
             "utf8");
     } catch (err) {
         console.error("An Error Occur:", err.message);
@@ -74,7 +73,7 @@ app.post("/api/v1/users", async (req, res) => {
     users.push(data);
 
     await fsp.writeFile(
-        "./users_data.json",
+        "./data/users.json",
         JSON.stringify(users));
 
     latest_user_id++;
