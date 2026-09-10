@@ -1,32 +1,26 @@
 import express from "express";
 import logger from "./middlewares/logger.js";
-import UsersEndPoints from "./api_endpoints/users.js";
+import morgan from "morgan";
+import UsersRouterInfo from "./routers/users_router.js";
 
+// App initialization.
 const app = express();
 
+UsersRouterInfo.InitRounter();
+
+
+// Middlewares Utility.
 app.use(express.json());
+app.use(morgan("dev"));
 app.use(logger);
 
-// app.route("/api/v1/users")
-//     .get(getAllUsers)
-//     .post(addUser);
+app.use(UsersRouterInfo.PathV1, UsersRouterInfo.Router);
 
-// app.route("/api/v1/users/:id")
-//     .put(updateUser)
-//     .get(getUser)
-//     .delete(deleteUser);
 
-app.route("/api/v1/users")
-    .get(UsersEndPoints.getAllUsers)
-    .post(UsersEndPoints.addUser);
-
-app.route("/api/v1/users/:id")
-    .put(UsersEndPoints.updateUser)
-    .get(UsersEndPoints.getUser)
-    .delete(UsersEndPoints.deleteUser);
-
+// Start up.
 const PORT = 3000;
 const HOST_NAME = "127.0.0.1";
 app.listen(PORT, HOST_NAME, () => {
     console.log("Server is Started.");
 });
+

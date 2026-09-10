@@ -1,6 +1,10 @@
-import ResponseStatus from "./ResponseStatus.js";
+class ResponseStatus {
+    static fail = "fail";
+    static success = "success";
+}
 
-export default class Response {
+
+class Response {
     static ok(res, data) {
         if (!data) {
             res.status(200).json({
@@ -9,14 +13,14 @@ export default class Response {
             });
             return;
         }
-        
+
         res.status(200).json({
             status: ResponseStatus.success,
             code: 200,
             data: data
         });
     }
-    
+
     static created(res, data) {
         res.status(201).json({
             status: ResponseStatus.success,
@@ -24,7 +28,7 @@ export default class Response {
             data: data
         });
     }
-    
+
     static badRequest(res, message = "Invalid Request") {
         res.status(401).json({
             status: ResponseStatus.fail,
@@ -32,7 +36,7 @@ export default class Response {
             message: message
         });
     }
-    
+
     static notFound(res, message) {
         res.status(404).json({
             status: ResponseStatus.fail,
@@ -40,7 +44,7 @@ export default class Response {
             message: message
         });
     }
-    
+
     static internalServerError(res, message = "Internal server error") {
         res.status(500).json({
             status: ResponseStatus.fail,
@@ -48,4 +52,9 @@ export default class Response {
             message: message
         });
     }
+}
+
+export {
+    Response,
+    ResponseStatus
 }

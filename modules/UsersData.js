@@ -1,83 +1,169 @@
 import { default as fsp } from "fs/promises";
 import fs from "fs";
-import { Result, Success, Failure } from "../modules/Result.js";
+import { Error, ErrorType } from "./Error.js";
+import User from "./User.js";
+import { ResultOnly, ResultWithValue } from "./Result.js";
 
 export default class UsersData {
-    static #UsersDataPath = "../data/users.json";
-
-    #users;
+    #users = null;
 
     get Data() {
+        if (this.#users === null || this.#users === undefined) {
+            throw new Exception("There is no users data");
+        }
+
         return this.#users;
     }
 
-    loadUsers() {
-        this.#users = UsersData.getUsersDataAtTheStatrUp();
-    }
-
-    async addUser(user) {
-        if (!user) {
-            return Failure();
+    async loadUsersAsync() {
+        if (this.#users === null || this.#users === undefined) {
+            this.#users = UsersDataUtilities.getUsersData();
         }
 
-        this.#users = UsersData.getUsersDataAtTheStatrUp();
+        return ResultWithValue.success(this.#users);
+    }
+
+    async addUserAsync(user) {
+        if (!user) {
+            return ResultOnly.failure(Error.NullValue)
+        }
+
+        this.#users = UsersDataUtilities.getUsersData();
+        
+        user.id = (this.#users[this.#users.length - 1].id) + 1;
+        
         this.#users.push(user);
 
         try {
             await fsp.writeFile(
-                UsersData.#UsersDataPath,
+                UsersData.UsersDataPath,
                 this.#users,
                 "utf8");
         } catch (err) {
             console.log("An Error Occur:", err.message);
-            return false;
+            
+            return ResultOnly.failure(
+                UsersDataUtilities.openFileError(err.message));
         }
 
-        return true;
+        return ResultOnly.success();
     }
 
-    async updateUser(userId, user) {
+    async updateUserAsync(userId, user) {
         if (!user) {
-            return false;
+            return ResultOnly.failure(Error.NullValue);
         }
 
-        this.#users = UsersData.getUsersDataAtTheStatrUp();
+        this.#users = UsersDataUtilities.getUsersData();
 
         const userToUpdate = this.#users.find(u => u.id === userId);
 
         if (!userToUpdate) {
-
-            return
+            return ResultOnly.failure(
+                new Error(
+                    "Users.NotFound",
+                    `User with id: '${userId}' is not found`,
+                    ErrorType.NotFound));
         }
 
-        userToUpdate.userName = user.userName;
-        userToUpdate.password = user.password;
+        // userToUpdate.userName = user.userName;
+        // userToUpdate.password = user.password;
+
+        userToUpdate = User.From(user);
 
         try {
             await fsp.writeFile(
-                UsersData.#UsersDataPath,
+                UsersData.UsersDataPath,
                 this.#users,
                 "utf8");
         } catch (err) {
             console.log("An Error Occur:", err.message);
-            return false;
+            
+            return ResultOnly.failure(
+                UsersDataUtilities.openFileError(err.message));
         }
 
-        return true;
+        return ResultOnly.success();
     }
 
-    static getUsersDataAtTheStatrUp() {
+    async deleteUserAsync(userId) {
+        if (userId < 1) {
+            return ResultOnly.failure(
+                new Error(
+                    "Invalid.ID",
+                    "User id must not be negative",
+                    ErrorType.Validation));
+        }
+
+        this.#users = UsersDataUtilities.getUsersData();
+
+        const userToDelete = this.#users.find(u => u.id === userId);
+
+        let idxUserToDelete = -1;
+        
+        if (!userToDelete) {
+            return ResultOnly.failure(
+                new Error(
+                    "Users.NotFound",
+                    `User with id: '${userId}' is not found`,
+                    ErrorType.NotFound));
+        }
+
+        idxUserToDelete = this.#users.indexOf(userToDelete);
+        
+        // this.#users = 
+        this.#users.splice(idxUserToDelete, 1);
+
+        try {
+            await fsp.writeFile(
+                UsersDataUtilities.UsersDataPath,
+                this.#users,
+                "utf8");
+        } catch (err) {
+            console.log("An Error Occur:", err.message);
+
+            return ResultOnly.failure(
+                UsersDataUtilities.openFileError(err.message));
+        }
+
+        return ResultOnly.success();
+    }
+}
+
+
+class UsersDataUtilities {
+    static get UsersDataPath() {
+        return "./../../../home/learning_node_js_with_procademy/data/users.json";
+    }
+    
+    static openFileError(errorMessage) {
+        const isNotFound = errorMessage.toLowerCase()
+            .include("not found");
+
+        const code = isNotFound
+            ? "File.NotFound"
+            : "File.OpeningProblem";
+
+        const description = isNotFound
+            ? "File is not found."
+            : "Problem with opening file.";
+
+        return new Error(code, description,
+            isNotFound ? ErrorType.Failure : ErrorType.Problem);
+    }
+
+    static getUsersData() {
         let data;
         try {
             data = fs.readFileSync(
-                this.#UsersDataPath,
+                UsersDataUtilities.UsersDataPath,
                 "utf8");
         } catch (err) {
             console.error("An Error Occur:", err.message);
             return new Array(0);
         }
-        
-        return data 
+
+        return data
             ? JSON.parse(data)
             : new Array(0);
     }

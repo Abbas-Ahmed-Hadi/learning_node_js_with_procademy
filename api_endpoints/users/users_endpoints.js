@@ -1,20 +1,30 @@
-import UsersData from "../modules/UsersData.js";
-import Response from "../modules/Response.js";
-import User from "../modules/User.js";
+import UsersData from "../../modules/UsersData.js";
+import { Response } from "../../modules/Response.js";
+import User from "../../modules/User.js";
+import StringUtilities from "../../utilities/string_utilities.js";
 
 export default class UsersEndPoints {
 
     static async getAllUsers(_, res) {
         const usersData = new UsersData();
+        
+        const result = await usersData.loadUsersAsync();
+        
+        if (result.isFailure) {
+            Response.notFound(res, result.error);
+            return;
+        }
+        
+        const data = usersData.Data;
 
-        if (!usersData.Data) {
+        if (!data) {
             Response.notFound(res, "No users found");
             return;
         }
 
         Response.ok(res, {
-            count: usersData.Data.length,
-            users: usersData.Data
+            count: data.length,
+            users: data
         });
     }
 
@@ -22,15 +32,19 @@ export default class UsersEndPoints {
         const userId = Number.parseInt(req.params.id);
         
         if (Number.isNaN(userId)) {
-            Response.badRequest(res, 
-                `Invalid user id`);
-                
+            Response.badRequest(res, `Invalid user id`);
             return;
         }
         
         const usersData = new UsersData();
-        const user = usersData.Data
-            .find(u => u.id === userId);
+        const result = await usersData.loadUsersAsync();
+        
+        if (result.isFailure) {
+            Response.notFound(res, result.error);
+            return;
+        }
+        
+        const user = result.Data.find(u => u.id === userId);
 
         if (!user) {
             Response.notFound(res,
@@ -42,27 +56,26 @@ export default class UsersEndPoints {
     }
 
     static async addUser(req, res) {
-        const users = UsersData.Data();
-
-        let newId = users[users?.length - 1]?.id ?? 0;
-        newId++;
-
+        const userName = req.body.userName;
+        const password = req.body.password;
+        
+        if (StringUtilities.isNullOrWhiteSpace(password) ||
+            StringUtilities.isNullOrWhiteSpace(userName)) {
+            Response.badRequest(res);
+            return;
+        }
+        
+        const usersData = new UsersData();
+        
         const newUser = new User(
-            newId,
-            req.body.userName,
-            req.body.password
-        );
-
-        users.push(newUser);
-
-        try {
-            await fsp.writeFile(
-                "./data/users.json",
-                JSON.stringify(users));
-        } catch (err) {
-            console.log("An Error Occur:", err.message);
-
-            Response.internalServerError(res);
+            0,
+            userName,
+            password);
+      
+        const result = await usersData.addUserAsync(newUser);
+        
+        if (result.isFailure) {
+            Response.internalServerError(res, result.error);
             return;
         }
 

@@ -4,4 +4,12 @@ export default class User {
         this.userName = userName;
         this.password = password;
     }
+    
+    static From(user) {
+        return new User(
+            user.id,
+            user.userName,
+            user.password
+        );
+    }
 }

@@ -1,11 +1,18 @@
-import ErrorType from "./ErrorType.js";
+class ErrorType {
+    static Failure = 0;
+    static Validation = 1;
+    static Problem = 2;
+    static NotFound = 3;
+    static Conflict = 4;
+}
 
-export default class Error {
+
+class Error {
     #code;
     #description;
     #type;
 
-    static #None = new Error("", "", ErrorType.None);
+    static #None = new Error("", "", ErrorType.Failure);
 
     static #NullValue = new Error(
         "General.Null",
@@ -39,12 +46,16 @@ export default class Error {
         return Error.#NullValue;
     }
 
+    static NotFound(code, description) {
+        new Error(code, description, ErrorType.NotFound);
+    }
+    
     static Failure(code, description) {
         new Error(code, description, ErrorType.Failure);
     }
     
-    static NotFound(code, description) {
-        new Error(code, description, ErrorType.NotFound);
+    static Validation(code, description) {
+        return new Error(code, description, ErrorType.V)
     }
     
     static Problem(code, description) {
@@ -55,3 +66,5 @@ export default class Error {
         new Error(code, description, ErrorType.Conflict);
     }
 }
+
+export { Error, ErrorType }
