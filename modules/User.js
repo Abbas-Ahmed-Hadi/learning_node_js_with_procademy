@@ -12,4 +12,10 @@ export default class User {
             user.password
         );
     }
+    
+    updateFrom(user) {
+        this.id = user.id;
+        this.userName = user.userName;
+        this.password = user.password;
+    }
 }

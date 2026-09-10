@@ -34,19 +34,9 @@ export default class UsersData {
         
         this.#users.push(user);
 
-        try {
-            await fsp.writeFile(
-                UsersData.UsersDataPath,
-                this.#users,
-                "utf8");
-        } catch (err) {
-            console.log("An Error Occur:", err.message);
-            
-            return ResultOnly.failure(
-                UsersDataUtilities.openFileError(err.message));
-        }
+        const result = await UsersDataUtilities.trySaveUsersDataAsync(this.#users);
 
-        return ResultOnly.success();
+        return result;
     }
 
     async updateUserAsync(userId, user) {
@@ -66,35 +56,15 @@ export default class UsersData {
                     ErrorType.NotFound));
         }
 
-        // userToUpdate.userName = user.userName;
-        // userToUpdate.password = user.password;
+        userToUpdate.userName = user.userName;
+        userToUpdate.password = user.password;
 
-        userToUpdate = User.From(user);
+        const result = await UsersDataUtilities.trySaveUsersDataAsync(this.#users);
 
-        try {
-            await fsp.writeFile(
-                UsersData.UsersDataPath,
-                this.#users,
-                "utf8");
-        } catch (err) {
-            console.log("An Error Occur:", err.message);
-            
-            return ResultOnly.failure(
-                UsersDataUtilities.openFileError(err.message));
-        }
-
-        return ResultOnly.success();
+        return result;
     }
 
     async deleteUserAsync(userId) {
-        if (userId < 1) {
-            return ResultOnly.failure(
-                new Error(
-                    "Invalid.ID",
-                    "User id must not be negative",
-                    ErrorType.Validation));
-        }
-
         this.#users = UsersDataUtilities.getUsersData();
 
         const userToDelete = this.#users.find(u => u.id === userId);
@@ -114,19 +84,9 @@ export default class UsersData {
         // this.#users = 
         this.#users.splice(idxUserToDelete, 1);
 
-        try {
-            await fsp.writeFile(
-                UsersDataUtilities.UsersDataPath,
-                this.#users,
-                "utf8");
-        } catch (err) {
-            console.log("An Error Occur:", err.message);
+        const result = await UsersDataUtilities.trySaveUsersDataAsync(this.#users);
 
-            return ResultOnly.failure(
-                UsersDataUtilities.openFileError(err.message));
-        }
-
-        return ResultOnly.success();
+        return result;
     }
 }
 
@@ -138,7 +98,7 @@ class UsersDataUtilities {
     
     static openFileError(errorMessage) {
         const isNotFound = errorMessage.toLowerCase()
-            .include("not found");
+            .includes("not found");
 
         const code = isNotFound
             ? "File.NotFound"
@@ -150,6 +110,22 @@ class UsersDataUtilities {
 
         return new Error(code, description,
             isNotFound ? ErrorType.Failure : ErrorType.Problem);
+    }
+    
+    static async trySaveUsersDataAsync(data) {
+        try {
+            await fsp.writeFile(
+                UsersDataUtilities.UsersDataPath,
+                typeof data === "string" ? data : JSON.stringify(data),
+                "utf8");
+        } catch (err) {
+            console.log("An Error Occur:", err.message);
+            
+            return ResultOnly.failure(
+                UsersDataUtilities.openFileError(err.message));
+        }
+        
+        return ResultOnly.success();
     }
 
     static getUsersData() {

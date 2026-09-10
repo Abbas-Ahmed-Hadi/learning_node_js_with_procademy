@@ -1,3 +1,5 @@
+import { Error, ErrorType } from "./Error.js";
+
 class ResponseStatus {
     static fail = "fail";
     static success = "success";
@@ -5,7 +7,7 @@ class ResponseStatus {
 
 
 class Response {
-    static ok(res, data) {
+    static ok(res, data = null) {
         if (!data) {
             res.status(200).json({
                 status: ResponseStatus.success,
@@ -33,9 +35,19 @@ class Response {
         res.status(401).json({
             status: ResponseStatus.fail,
             code: 401,
-            message: message
+            mee: message
         });
     }
+    
+    static badRequest(res, error) {
+        res.status(401).json({
+            status: ResponseStatus.fail,
+            code: error.code,
+            message: error.description,
+            type: ResponseUtilities.errorTypeToString(error.type)
+        });
+    }
+    
 
     static notFound(res, message) {
         res.status(404).json({
@@ -44,6 +56,16 @@ class Response {
             message: message
         });
     }
+    
+    static notFound(res, error) {
+        res.status(404).json({
+            status: ResponseStatus.fail,
+            code: error.code,
+            message: error.description,
+            type: ResponseUtilities.errorTypeToString(error.type)
+        });
+    }
+    
 
     static internalServerError(res, message = "Internal server error") {
         res.status(500).json({
@@ -52,7 +74,39 @@ class Response {
             message: message
         });
     }
+    
+    static internalServerError(res, error) {
+        res.status(500).json({
+            status: ResponseStatus.fail,
+            code: error.code,
+            message: error.description,
+            type: ResponseUtilities.errorTypeToString(error.type)
+        });
+    }
 }
+
+
+class ResponseUtilities {
+    static errorTypeToString(errorType) {
+        switch (errorType) {
+            case ErrorType.Failure:
+                return "Erro";
+                
+            case ErrorType.Validation:
+                return "ErrorType.Validation";
+                
+            case ErrorType.Problem:
+                return "ErrorType.Problem";
+                
+            case ErrorType.NotFound:
+                return "ErrorType.NotFound";
+                
+            case ErrorType.Conflict:
+                return "ErrorType.Conflict";
+        }
+    }
+}
+
 
 export {
     Response,

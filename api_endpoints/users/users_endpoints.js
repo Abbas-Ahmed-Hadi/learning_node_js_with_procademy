@@ -2,6 +2,7 @@ import UsersData from "../../modules/UsersData.js";
 import { Response } from "../../modules/Response.js";
 import User from "../../modules/User.js";
 import StringUtilities from "../../utilities/string_utilities.js";
+import { ErrorType } from "../../modules/Error.js";
 
 export default class UsersEndPoints {
 
@@ -30,12 +31,16 @@ export default class UsersEndPoints {
 
     static async getUser(req, res) {
         const userId = Number.parseInt(req.params.id);
-        
-        if (Number.isNaN(userId)) {
-            Response.badRequest(res, `Invalid user id`);
+
+        if (Number.isNaN(userId) || userId < 1) {
+            Response.badRequest(res, "Invalid user id");
             return;
         }
-        
+        if (userId < 1) {
+            Response.badRequest(res, "User Id must not be zero or nagative.");
+            return;
+        }
+
         const usersData = new UsersData();
         const result = await usersData.loadUsersAsync();
         
@@ -43,8 +48,8 @@ export default class UsersEndPoints {
             Response.notFound(res, result.error);
             return;
         }
-        
-        const user = result.Data.find(u => u.id === userId);
+
+        const user = result.Value.find(u => u.id === userId);
 
         if (!user) {
             Response.notFound(res,
@@ -52,7 +57,7 @@ export default class UsersEndPoints {
             return;
         }
 
-        Response.ok(user);
+        Response.ok(res, user);
     }
 
     static async addUser(req, res) {
@@ -64,7 +69,7 @@ export default class UsersEndPoints {
             Response.badRequest(res);
             return;
         }
-        
+
         const usersData = new UsersData();
         
         const newUser = new User(
@@ -73,7 +78,7 @@ export default class UsersEndPoints {
             password);
       
         const result = await usersData.addUserAsync(newUser);
-        
+
         if (result.isFailure) {
             Response.internalServerError(res, result.error);
             return;
@@ -84,59 +89,68 @@ export default class UsersEndPoints {
 
     static async updateUser(req, res) {
         const userId = Number.parseInt(req.params.id);
-        const userToUpdate = users.find(u => u.id === userId);
-
-        if (!userToUpdate) {
-            Response.notFound(res,
-                `User not found with id '${userId}'`);
+        
+        if (Number.isNaN(userId)) {
+            Response.badRequest(res, "Invalid user id");
             return;
         }
-
-        userToUpdate.id = userId;
-        userToUpdate.userName = req.body.userName;
-        userToUpdate.password = req.body.password;
-
-        try {
-            await fsp.writeFile(
-                "./data/users.json",
-                JSON.stringify(users));
-        } catch (err) {
-            console.log("An Error Occur:", err.message);
-
-            Response.internalServerError(res);
+        if (userId < 1) {
+            Response.badRequest(res, "User Id must not be zero or nagative.");
             return;
         }
-
+        
+        const userToUpdate = new User(
+            userId,
+            req.body.userName,
+            req.body.password);
+        
+        const usersData = new UsersData();
+        
+        const result = await usersData.updateUserAsync(userId, userToUpdate);
+        
+        if (result.isFailure) {
+            const error = result.error;
+            
+            if (error.type === ErrorType.NotFound){
+                Response.notFound(res, error);
+            } else {
+                Result.internalServerError(res, error);
+            }
+            
+            return;
+        }
+        
         Response.ok(res, userToUpdate);
     }
 
     static async deleteUser(req, res) {
         const userId = Number.parseInt(req.params.id);
 
-        const userToDelete = users.find(u => u.id === userId);
-
-        if (!userToDelete) {
-            failedUserNotFoundById(res, userId);
+        if (Number.isNaN(userId)) {
+            Response.badRequest(res, "Invalid user id");
             return;
         }
-
-        const indexOfUserToDelete = users.indexOf(userToDelete);
-        if (indexOfUserToDelete === -1) {
-            failedNotFoundById(res,
-                `User not found with id '${userId}'`);
-            return;
+        if (userId < 1) {
+            return Response.badRequest(
+                res, 
+                new Error(
+                    "User.InvalidID",
+                    "User id must not be zero or negative",
+                    ErrorType.Validation));
         }
 
-        users.splice(indexOfUserToDelete, 1);
+        const usersData = new UsersData();
+        
+        const result = await usersData.deleteUserAsync(userId);
 
-        try {
-            await fsp.writeFile(
-                "./data/users.json",
-                JSON.stringify(users));
-        } catch (err) {
-            console.log("An Error Occur:", err.message);
-
-            Response.internalServerError(res);
+        if (result.isFailure) {
+            const error = result.error;
+            
+            if (error.type === ErrorType.NotFound) {
+                Response.notFound(res, error);
+            }
+            else{Response.internalServerError(res, error);}
+            
             return;
         }
 

@@ -34,7 +34,7 @@ class Error {
         return this.#code;
     }
 
-    get errorType() {
+    get type() {
         return this.#type;
     }
 
