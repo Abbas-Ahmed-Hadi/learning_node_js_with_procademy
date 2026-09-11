@@ -28,9 +28,9 @@ export default class UsersData {
         }
 
         this.#users = UsersDataUtilities.getUsersData();
-        
+
         user.id = (this.#users[this.#users?.length - 1]?.id ?? 0) + 1;
-        
+
         this.#users.push(user);
 
         const result = await UsersDataUtilities.trySaveUsersDataAsync(this.#users);
@@ -69,7 +69,7 @@ export default class UsersData {
         const userToDelete = this.#users.find(u => u.id === userId);
 
         let idxUserToDelete = -1;
-        
+
         if (!userToDelete) {
             return ResultOnly.failure(
                 new Error(
@@ -90,10 +90,18 @@ export default class UsersData {
 
 
 class UsersDataUtilities {
+    static #usersDataPath = null;
+
     static get UsersDataPath() {
-        return "./../../../home/learning_node_js_with_procademy/data/users.json";
+        if (UsersDataUtilities.#usersDataPath === null) {
+            UsersDataUtilities.#usersDataPath = new URL(
+                "../data/users.json", 
+                import.meta.url);
+        }
+
+        return UsersDataUtilities.#usersDataPath;
     }
-    
+
     static openFileError(errorMessage) {
         const isNotFound = errorMessage.toLowerCase()
             .includes("not found");
