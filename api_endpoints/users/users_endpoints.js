@@ -2,13 +2,12 @@ import UsersData from "../../modules/UsersData.js";
 import { Response } from "../../modules/Response.js";
 import User from "../../modules/User.js";
 import StringUtilities from "../../utilities/string_utilities.js";
-import { ErrorType } from "../../modules/Error.js";
+import { Error, ErrorType } from "../../modules/Error.js";
 
 export default class UsersEndPoints {
 
     static async getAllUsers(_, res) {
-        const usersData = new UsersData();
-        
+        const usersData = new UsersData();        
         const result = await usersData.loadUsersAsync();
         
         if (result.isFailure) {
@@ -18,9 +17,13 @@ export default class UsersEndPoints {
         const data = usersData.Data;
 
         if (!data || (data?.length === 0 ?? false)) {
-            return Response.notFound(res, "No users found");
+            return Response.notFound(res, 
+                new Error(
+                    "User.NoUsersFound",
+                    "No users found",
+                    ErrorType.NotFound));
         }
-
+        
         return Response.ok(res, {
             count: data.length,
             users: data
@@ -41,7 +44,10 @@ export default class UsersEndPoints {
 
         if (!user) {
             return Response.notFound(res,
-                `User not found with id '${userId}'`);
+                new Error(
+                    "Users.NotFound",
+                    `User not found with id '${userId}'`,
+                    ErrorType.NotFound));
         }
 
         return Response.ok(res, user);
@@ -53,7 +59,11 @@ export default class UsersEndPoints {
         
         if (StringUtilities.isNullOrWhiteSpace(password) ||
             StringUtilities.isNullOrWhiteSpace(userName)) {
-            return Response.badRequest(res);
+            return Response.badRequest(res, 
+                new Error(
+                    "User.InvalidData",
+                    "Invalid user data",
+                    ErrorType.Validation));
         }
 
         const usersData = new UsersData();
@@ -66,8 +76,7 @@ export default class UsersEndPoints {
         const result = await usersData.addUserAsync(newUser);
 
         if (result.isFailure) {
-            return Response
-                .internalServerError(res, result.error);
+            return Response.internalServerError(res, result.error);
         }
 
         return Response.created(res, newUser);

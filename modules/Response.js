@@ -1,4 +1,4 @@
-import { Error, ErrorType } from "./Error.js";
+import { ErrorType } from "./Error.js";
 
 class ResponseStatus {
     static fail = "fail";
@@ -31,13 +31,6 @@ class Response {
         });
     }
 
-    static badRequest(res, message = "Invalid Request") {
-        res.status(401).json({
-            status: ResponseStatus.fail,
-            code: 401,
-            mee: message
-        });
-    }
     
     static badRequest(res, error) {
         res.status(401).json({
@@ -45,15 +38,6 @@ class Response {
             code: error.code,
             message: error.description,
             type: ResponseUtilities.errorTypeToString(error.type)
-        });
-    }
-    
-
-    static notFound(res, message) {
-        res.status(404).json({
-            status: ResponseStatus.fail,
-            code: 404,
-            message: message
         });
     }
     
@@ -65,16 +49,7 @@ class Response {
             type: ResponseUtilities.errorTypeToString(error.type)
         });
     }
-    
 
-    static internalServerError(res, message = "Internal server error") {
-        res.status(500).json({
-            status: ResponseStatus.fail,
-            code: 500,
-            message: message
-        });
-    }
-    
     static internalServerError(res, error) {
         res.status(500).json({
             status: ResponseStatus.fail,
@@ -90,19 +65,19 @@ class ResponseUtilities {
     static errorTypeToString(errorType) {
         switch (errorType) {
             case ErrorType.Failure:
-                return "Erro";
+                return "Failure";
                 
             case ErrorType.Validation:
-                return "ErrorType.Validation";
+                return "Validation";
                 
             case ErrorType.Problem:
-                return "ErrorType.Problem";
+                return "Problem";
                 
             case ErrorType.NotFound:
-                return "ErrorType.NotFound";
+                return "NotFound";
                 
             case ErrorType.Conflict:
-                return "ErrorType.Conflict";
+                return "Conflict";
         }
     }
 }

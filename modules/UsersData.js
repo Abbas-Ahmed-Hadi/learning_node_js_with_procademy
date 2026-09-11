@@ -66,19 +66,15 @@ export default class UsersData {
     async deleteUserAsync(userId) {
         this.#users = UsersDataUtilities.getUsersData();
 
-        const userToDelete = this.#users.find(u => u.id === userId);
+        const idxUserToDelete = this.#users.findIndex(u => u.id === userId);
 
-        let idxUserToDelete = -1;
-
-        if (!userToDelete) {
+        if (idxUserToDelete === -1) {
             return ResultOnly.failure(
                 new Error(
                     "Users.NotFound",
                     `User with id: '${userId}' is not found`,
                     ErrorType.NotFound));
         }
-
-        idxUserToDelete = this.#users.indexOf(userToDelete);
 
         this.#users.splice(idxUserToDelete, 1);
 
