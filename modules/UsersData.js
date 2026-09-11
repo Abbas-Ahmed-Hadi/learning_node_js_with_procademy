@@ -1,7 +1,6 @@
 import { default as fsp } from "fs/promises";
 import fs from "fs";
 import { Error, ErrorType } from "./Error.js";
-import User from "./User.js";
 import { ResultOnly, ResultWithValue } from "./Result.js";
 
 export default class UsersData {
@@ -30,7 +29,7 @@ export default class UsersData {
 
         this.#users = UsersDataUtilities.getUsersData();
         
-        user.id = (this.#users[this.#users.length - 1].id) + 1;
+        user.id = (this.#users[this.#users?.length - 1]?.id ?? 0) + 1;
         
         this.#users.push(user);
 
@@ -80,8 +79,7 @@ export default class UsersData {
         }
 
         idxUserToDelete = this.#users.indexOf(userToDelete);
-        
-        // this.#users = 
+
         this.#users.splice(idxUserToDelete, 1);
 
         const result = await UsersDataUtilities.trySaveUsersDataAsync(this.#users);

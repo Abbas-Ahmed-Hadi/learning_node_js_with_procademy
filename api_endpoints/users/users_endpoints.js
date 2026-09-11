@@ -12,18 +12,16 @@ export default class UsersEndPoints {
         const result = await usersData.loadUsersAsync();
         
         if (result.isFailure) {
-            Response.notFound(res, result.error);
-            return;
+            return Response.notFound(res, result.error);
         }
         
         const data = usersData.Data;
 
-        if (!data) {
-            Response.notFound(res, "No users found");
-            return;
+        if (!data || (data?.length === 0 ?? false)) {
+            return Response.notFound(res, "No users found");
         }
 
-        Response.ok(res, {
+        return Response.ok(res, {
             count: data.length,
             users: data
         });
@@ -32,32 +30,21 @@ export default class UsersEndPoints {
     static async getUser(req, res) {
         const userId = Number.parseInt(req.params.id);
 
-        if (Number.isNaN(userId) || userId < 1) {
-            Response.badRequest(res, "Invalid user id");
-            return;
-        }
-        if (userId < 1) {
-            Response.badRequest(res, "User Id must not be zero or nagative.");
-            return;
-        }
-
         const usersData = new UsersData();
         const result = await usersData.loadUsersAsync();
         
         if (result.isFailure) {
-            Response.notFound(res, result.error);
-            return;
+            return Response.notFound(res, result.error);
         }
 
         const user = result.Value.find(u => u.id === userId);
 
         if (!user) {
-            Response.notFound(res,
+            return Response.notFound(res,
                 `User not found with id '${userId}'`);
-            return;
         }
 
-        Response.ok(res, user);
+        return Response.ok(res, user);
     }
 
     static async addUser(req, res) {
@@ -66,8 +53,7 @@ export default class UsersEndPoints {
         
         if (StringUtilities.isNullOrWhiteSpace(password) ||
             StringUtilities.isNullOrWhiteSpace(userName)) {
-            Response.badRequest(res);
-            return;
+            return Response.badRequest(res);
         }
 
         const usersData = new UsersData();
@@ -80,24 +66,15 @@ export default class UsersEndPoints {
         const result = await usersData.addUserAsync(newUser);
 
         if (result.isFailure) {
-            Response.internalServerError(res, result.error);
-            return;
+            return Response
+                .internalServerError(res, result.error);
         }
 
-        Response.created(res, newUser);
+        return Response.created(res, newUser);
     }
 
     static async updateUser(req, res) {
         const userId = Number.parseInt(req.params.id);
-        
-        if (Number.isNaN(userId)) {
-            Response.badRequest(res, "Invalid user id");
-            return;
-        }
-        if (userId < 1) {
-            Response.badRequest(res, "User Id must not be zero or nagative.");
-            return;
-        }
         
         const userToUpdate = new User(
             userId,
@@ -112,32 +89,17 @@ export default class UsersEndPoints {
             const error = result.error;
             
             if (error.type === ErrorType.NotFound){
-                Response.notFound(res, error);
+                return Response.notFound(res, error);
             } else {
-                Result.internalServerError(res, error);
+                return Response.internalServerError(res, error);
             }
-            
-            return;
         }
         
-        Response.ok(res, userToUpdate);
+        return Response.ok(res, userToUpdate);
     }
 
     static async deleteUser(req, res) {
         const userId = Number.parseInt(req.params.id);
-
-        if (Number.isNaN(userId)) {
-            Response.badRequest(res, "Invalid user id");
-            return;
-        }
-        if (userId < 1) {
-            return Response.badRequest(
-                res, 
-                new Error(
-                    "User.InvalidID",
-                    "User id must not be zero or negative",
-                    ErrorType.Validation));
-        }
 
         const usersData = new UsersData();
         
@@ -147,13 +109,13 @@ export default class UsersEndPoints {
             const error = result.error;
             
             if (error.type === ErrorType.NotFound) {
-                Response.notFound(res, error);
+                return Response.notFound(res, error);
             }
-            else{Response.internalServerError(res, error);}
-            
-            return;
+            else {
+                return Response.internalServerError(res, error);
+            }
         }
 
-        Response.ok(res);
+        return Response.ok(res);
     }
 }
