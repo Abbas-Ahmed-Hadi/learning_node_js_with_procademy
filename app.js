@@ -11,14 +11,15 @@ UsersRouterInfo.InitRounter();
 
 
 // Middlewares Utility.
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan("dev")); 
+}
+
 app.use(express.json());
-app.use(morgan("dev"));
 app.use(express.static("./public"));
 app.use(logger);
 
 app.use(UsersRouterInfo.PathV1, UsersRouterInfo.Router);
 
 
-export {
-    app
-}
+export default app;
