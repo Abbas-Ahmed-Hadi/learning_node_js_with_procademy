@@ -1,8 +1,7 @@
-import UsersData from "../../modules/UsersData.js";
-import { Response } from "../../modules/Response.js";
-import User from "../../modules/User.js";
-import StringUtilities from "../../utilities/string_utilities.js";
-import { Error, ErrorType } from "../../modules/Error.js";
+import UsersData from "../modules/UsersData.js";
+import { Response } from "../modules/Response.js";
+import User from "../modules/User.js";
+import { Error, ErrorType } from "../modules/Error.js";
 
 export default class UsersEndPoints {
 
@@ -54,24 +53,12 @@ export default class UsersEndPoints {
     }
 
     static async addUser(req, res) {
-        const userName = req.body.userName;
-        const password = req.body.password;
-        
-        if (StringUtilities.isNullOrWhiteSpace(password) ||
-            StringUtilities.isNullOrWhiteSpace(userName)) {
-            return Response.badRequest(res, 
-                new Error(
-                    "User.InvalidData",
-                    "Invalid user data",
-                    ErrorType.Validation));
-        }
-
         const usersData = new UsersData();
         
         const newUser = new User(
             0,
-            userName,
-            password);
+            req.body.userName,
+            req.body.password);
       
         const result = await usersData.addUserAsync(newUser);
 

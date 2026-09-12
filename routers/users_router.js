@@ -1,5 +1,6 @@
 import express from "express";
-import UsersEndPoints from "../api_endpoints/users/users_endpoints.js";
+import UsersEndPoints from "../api_endpoints/users_endpoints.js";
+import StringUtilities from "../utilities/string_utilities.js";
 
 export default class UsersRouterInfo {
     static #usersRouter = null;
@@ -12,11 +13,13 @@ export default class UsersRouterInfo {
 
         this.#usersRouter.route("/")
             .get(UsersEndPoints.getAllUsers)
-            .post(UsersEndPoints.addUser);
+            .post(UsersEndpointsValidator.validateUserRequestBody, 
+                UsersEndPoints.addUser);
 
         this.#usersRouter.route("/:id")
-            .put(UsersEndPoints.updateUser)
             .get(UsersEndPoints.getUser)
+            .put(UsersEndpointsValidator.validateUserRequestBody, 
+                UsersEndPoints.updateUser)
             .delete(UsersEndPoints.deleteUser);
     }
 
@@ -58,6 +61,26 @@ class UsersEndpointsValidator {
             return;
         }
 
+        next();
+    }
+    
+    static validateUserRequestBody(req, res, next) {
+        const userName = req.body.userName;
+        const password = req.body.password;
+        
+        const isUserNameNotValid = StringUtilities.isNullOrWhiteSpace(userName);
+        const isPasswordNotValid = StringUtilities.isNullOrWhiteSpace(password);
+        
+        
+        
+        if (isUserNameNotValid || isPasswordNotValid) {
+            return Response.badRequest(res, 
+                new Error(
+                    "User.InvalidData",
+                    "Invalid user data",
+                    ErrorType.Validation));
+        }
+        
         next();
     }
 }
