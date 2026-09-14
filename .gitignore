@@ -5,7 +5,7 @@ node_modules/
 data/
 
 # Environment Variables
-.env
+*.env
 .env.*
 
 # Logs
