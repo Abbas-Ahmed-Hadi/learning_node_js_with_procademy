@@ -6,11 +6,13 @@ const SERVER_PORT = process.env.SERVER_PORT ?? 3000;
 const HOST_NAME = process.env.HOST_NAME ?? "127.0.0.1";
 const NODE_ENV = process.env.NODE_ENV ?? "prodection";
 
-const MONGODB_CONN_STR = process.env.MONGODB_CONN_STR ?? "mongodb://localhost:27017";
-const DB_NAME = process.env.DB_NAME ?? "MyFirstDB";
+if (!process.env.MONGODB_CONN_STR) throw new Exception("Connection String Not Found.");
+const MONGODB_CONN_STR = process.env.MONGODB_CONN_STR;
 
-const DB_CONN_STR = //new URL(MONGODB_CONN_STR, DB_NAME);
-    MONGODB_CONN_STR + '/' + DB_NAME;
+if(!process.env.DB_NAME) throw new Exception("Database Name Not Found.");
+const DB_NAME = process.env.DB_NAME;
+
+const DB_CONN_STR = MONGODB_CONN_STR + '/' + DB_NAME;
 
 export {
     SERVER_PORT,

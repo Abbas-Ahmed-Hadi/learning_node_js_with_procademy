@@ -1,5 +1,5 @@
 export default class User {
-    constructor(id = 0, userName = "", password = "") {
+    constructor(id, userName, password) {
         this.id = id;
         this.userName = userName;
         this.password = password;
@@ -13,9 +13,9 @@ export default class User {
         );
     }
     
-    updateFrom(user) {
-        this.id = user.id;
-        this.userName = user.userName;
-        this.password = user.password;
+    updateFrom(otherUser) {
+        this.id = otherUser.id;
+        this.userName = otherUser.userName;
+        this.password = otherUser.password;
     }
 }
