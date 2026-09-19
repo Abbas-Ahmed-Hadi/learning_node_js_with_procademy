@@ -23,7 +23,7 @@ class ResultOnly {
     }
     
     get error() {
-        return this.#error;
+        return this.#error.clone();
     }
     
     static Success() {

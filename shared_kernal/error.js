@@ -1,4 +1,4 @@
-class ErrorType {
+export class ErrorType {
     static Failure = "Failure";
     static NotFound = "NotFound";
     static Validation= "Validation";
@@ -7,7 +7,7 @@ class ErrorType {
 }
 
 
-class Error {
+export default class Error {
     #code;
     #description;
     #type;
@@ -16,7 +16,7 @@ class Error {
     
     static #NullValue = new Error(
         "General.NullValue",
-        "Null or undefined value was provided.",
+        "Null or undefined value was provided",
         ErrorType.Failure);
     
     constructor(code, description, type) {
@@ -64,10 +64,4 @@ class Error {
     static Conflict(code, description) {
         return new Error(code, description, ErrorType.Conflict);
     }
-}
-
-
-export {
-    Error,
-    ErrorType
 }
