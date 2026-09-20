@@ -1,11 +1,11 @@
-import UserService from "./../services/user_service.js";
+import UserServices from "./../services/user_service.js";
 import User from "./../entities/user.js";
 import Response from "./../shared_kernal/response.js";
 import { ErrorType } from "./../shared_kernal/error.js";
 
-export default class UserController {
+export default class UsersController {
     static getAllUsers(_, res) {
-        const result = UserService.getAllUsers();
+        const result = UserServices.getAllUsers();
 
         return result.isFailure
             ? Response.NotFound(res, result.error)
@@ -18,10 +18,12 @@ export default class UserController {
     static getUserById(req, res) {
         const userId = Number.parseInt(req.params.id);
 
-        const result = UserService.getUserById(userId);
+        const result = UserServices.getUserById(userId);
 
         return result.isFailure
-            ? Response.NotFound(res, result.error)
+            ? result.error.type === ErrorType.NotFound
+                ? Response.NotFound(res, result.error)
+                : Response.InternalServerError(res, result.error)
             : Response.OK(res, result.value);
     }
 
@@ -31,10 +33,10 @@ export default class UserController {
             req.body.userName,
             req.body.password);
 
-        const result = UserService.addUser(user);
+        const result = UserServices.addUser(user);
 
         return result.isFailure
-            ? result.error.type === ErrorType.NotFound
+            ? result.error.type === ErrorType.Conflict
                 ? Response.Conflict(res, result.error)
                 : Response.BadRequest(res, result.error)
             : Response.Created(res, result.value);
@@ -48,22 +50,24 @@ export default class UserController {
             req.body.userName,
             req.body.password);
 
-        const result = UserService.updateUserById(userId, user);
+        const result = UserServices.updateUserById(userId, user);
 
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
                 ? Response.NotFound(res, result.error)
-                : Response.BadRequest(res, result.error)
+                : Response.InternalServerError(res, result.error)
             : Response.OK(res, result.value);
     }
 
     static deleteUserById(req, res) {
         const userId = Number.parseInt(req.params.id);
 
-        const result = UserService.deleteUserById(userId);
+        const result = UserServices.deleteUserById(userId);
 
         return result.isFailure
-            ? Response.NotFound(res, result.error)
+            ? result.error.type === ErrorType.NotFound
+                ? Response.NotFound(res, result.error)
+                : Response.InternalServerError(res, result.error)
             : Response.OK(res);
     }
 }

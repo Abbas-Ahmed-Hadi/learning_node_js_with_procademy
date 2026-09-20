@@ -1,5 +1,5 @@
 import { Error, ErrorType } from "./error.js";
-import { ValidatorExtension } from "./validator.js";
+import ValidatorExtensions from "./validator_extensions.js";
 
 export default class ValidationErrors extends Error {
     #errors;
@@ -8,10 +8,10 @@ export default class ValidationErrors extends Error {
         super(
             code,
             "One or more validation errors occurred",
-            ErrorType.Validation
-        );
+            ErrorType.Validation);
 
-        this.#errors = ValidatorExtension.NormalizeArrayOfErrors(errors);
+        this.#errors = ValidatorExtensions
+            .FormatArrayOfErrors(errors);
     }
 
     get errors() {

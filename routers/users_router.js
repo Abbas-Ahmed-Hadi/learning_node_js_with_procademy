@@ -1,10 +1,10 @@
 import express from "express";
-import UserController from "./../controllers/user_controller.js";
+import UsersController from "./../controllers/users_controller.js";
 import Response from "./../shared_kernal/response.js";
 import { Error, ErrorType } from "./../shared_kernal/error.js";
 import UserErrors from "./../shared_kernal/user_errors.js";
 import Validator from "./../shared_kernal/validator.js";
-// import ValidationErrors from "./../shared_kernal/validation_errors.js";
+import ValidatorExtensions from "./../shared_kernal/validator_extensions.js";
 
 class UserEndpointValidator {
     static ValidateUserIdParam(_, res, next, value) {
@@ -30,29 +30,33 @@ class UserEndpointValidator {
         const userName = req.body.userName;
         const password = req.body.password;
 
+        let validationErrors = new Array(0);
+        
         const userNameErrors = Validator.ValidateString(
             userName, "User name", 5, 20);
 
+        if (userNameErrors.length !== 0) {
+            const errors = ValidatorExtensions
+                .FormatArrayOfErrors(userNameErrors, "User Name");
+            
+            validationErrors = validationErrors.concat(errors);
+        }
+        
         const passwordErrors = Validator.ValidateString(
             password, "Password", 8, 30);
+        
+        if (passwordErrors.length !== 0) {
+            const errors = ValidatorExtensions
+                .FormatArrayOfErrors(passwordErrors, "Password");
+            
+            validationErrors = validationErrors.concat(errors);
+        }
 
-        if (userNameErrors.length !== 0 ||
-            passwordErrors.length !== 0) {
-
-            const validationErrors =
-            // new ValidationErrors(
-            {
-                ...userNameErrors,
-                ...passwordErrors
-            }
-            // );
-
-            console.log("ValidationUserRequestBody:\n  - ValidationErrors:", validationErrors)
-
+        if (validationErrors.length !== 0) {
             return Response
                 .ValidationFailure(res, validationErrors);
         }
-
+        
         next();
     }
 }
@@ -66,23 +70,23 @@ export default class UsersRouter {
         UsersRouter.#router = express.Router();
 
         UsersRouter.#router.route('/')
-            .get(UserController.getAllUsers)
+            .get(UsersController.getAllUsers)
             .post(UserEndpointValidator.ValidateUserRequestBody,
-                UserController.addUser);
+                UsersController.addUser);
 
         UsersRouter.#router.param("id",
             UserEndpointValidator.ValidateUserIdParam);
 
         UsersRouter.#router.route("/:id")
-            .get(UserController.getUserById)
+            .get(UsersController.getUserById)
             .put(UserEndpointValidator.ValidateUserRequestBody,
-                UserController.updateUserById)
-            .delete(UserController.deleteUserById);
+                UsersController.updateUserById)
+            .delete(UsersController.deleteUserById);
     }
 
     static get Router() {
         if (!UsersRouter.#router) {
-            throw new Exception("Users router must not be null.");
+            throw new Exception("Users router must be provided.");
         }
 
         return UsersRouter.#router;

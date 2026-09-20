@@ -1,34 +1,33 @@
 import { Error, ErrorType } from "./error.js";
 
-export default class UsersErrors {
-    
+export default class MoviesErrors {
     static #NotFound = new Error(
-        "Users.NotFound",
-        "User not found", 
+        "Movies.NotFound",
+        "Movie not found", 
         ErrorType.NotFound);
         
     static get NotFound() {
-        return UsersErrors.#NotFound;
+        return MoviesErrors.#NotFound;
     }
     
     static NotFoundById(id) {
         return new Error(
-            "Users.NotFoundById",
-            `User with id: '${id}' is not found`, 
+            "Movies.NotFoundById",
+            `Movie with id: '${id}' is not found`, 
             ErrorType.NotFound);
     }
         
-    static CreationFailure(user) {
+    static CreationFailure(movie) {
         return new Error(
             "User.CreationFailure",
-            `User with user name: ${user.userName} is not created`, 
+            `Movie with name: ${movie.name} is not created`, 
             ErrorType.Problem);
     }
     
     static InvalidId(id) {
         return new Error(
-            "Users.InvalidId",
-            `Invalid user id: '${id}'`,
+            "Movies.InvalidId",
+            `Invalid movie id: '${id}'`,
             ErrorType.Validation);
     }
 }
