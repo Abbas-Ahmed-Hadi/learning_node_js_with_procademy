@@ -10,6 +10,10 @@ if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
 }
 
-app.route(UsersRouter.PathV1, UsersRouter.Route);
+// console.log();
+// console.log("Used Router:", UsersRouter.Router);
+// console.log();
+
+app.use(UsersRouter.PathV1, UsersRouter.Router);
 
 export default app;

@@ -27,7 +27,7 @@ class ResultOnly {
     }
     
     static Success() {
-        return ResultOnly(true, Error.Empty);
+        return new ResultOnly(true, Error.Empty);
     }
     
     static Failure(error) {
@@ -59,7 +59,7 @@ class ResultWithValue extends ResultOnly {
                 "Value of seccess result must not be null or undefined.");
         }
         
-        return ResultWithValue(true, Error.Empty, value);
+        return new ResultWithValue(true, Error.Empty, value);
     }
 }
 

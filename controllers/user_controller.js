@@ -16,12 +16,12 @@ export default class UserController {
     }
 
     static getUserById(req, res) {
-        const userId = req.params.id;
+        const userId = Number.parseInt(req.params.id);
 
         const result = UserService.getUserById(userId);
 
         return result.isFailure
-            ? Response.NotFound(result.error)
+            ? Response.NotFound(res, result.error)
             : Response.OK(res, result.value);
     }
 
@@ -41,27 +41,29 @@ export default class UserController {
     }
 
     static updateUserById(req, res) {
+        const userId = Number.parseInt(req.params.id);
+
         const user = new User(
-            req.params.id,
+            userId, 
             req.body.userName,
             req.body.password);
 
-        const result = UserService.updateUserById(user);
+        const result = UserService.updateUserById(userId, user);
 
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
                 ? Response.NotFound(res, result.error)
                 : Response.BadRequest(res, result.error)
-            : Response.Created(res, result.value);
+            : Response.OK(res, result.value);
     }
 
     static deleteUserById(req, res) {
-        const userId = req.params.id;
+        const userId = Number.parseInt(req.params.id);
 
         const result = UserService.deleteUserById(userId);
 
         return result.isFailure
             ? Response.NotFound(res, result.error)
-            : Response.Created(res, result.value);
+            : Response.OK(res);
     }
 }

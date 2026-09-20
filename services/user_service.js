@@ -5,14 +5,18 @@ import User from "./../entities/user.js";
 
 export default class UserService {
     static #users = new Array(0);
+    static #latestUserId = 10;
     
-    static() {
-        for (let i = 1; i < 11; i++) {
-            UserService.#users.push(new User({
-                id: i,
-                userName: `User Name ${i}`,
-                password: `password ${i}`
-            }));
+    static #getNewId() {
+        return ++UserService.#latestUserId;
+    }
+    
+    static {
+        for (let i = 1; i <= UserService.#latestUserId; i++) {
+            UserService.#users.push(new User(
+                i,
+                `User Name ${i}`,
+                `password ${i}`));
         }
     }
     
@@ -36,7 +40,12 @@ export default class UserService {
     }
     
     static addUser(user) {
-        const newUser = UserService.#users.push(user);
+        const newUser = new User(
+            UserService.#getNewId(), 
+            user.userName, 
+            user.password);
+        
+        UserService.#users.push(newUser);
         
         return !newUser
             ? ResultOnly.Failure(UserErrors.CreationFailure(user))
@@ -50,10 +59,9 @@ export default class UserService {
             return ResultOnly.Failure(UserErrors.NotFound);
         }
         
-        u.userName = user.userName;
-        u.password = user.password;
-        
-        ResultOnly.Success();
+        userToUpdate.updateFrom(user);
+
+        return ResultWithValue.Success(user);
     }
     
     static deleteUserById(id) {
@@ -65,6 +73,6 @@ export default class UserService {
         
         UserService.#users.splice(userToDeleteIndex, 1);
         
-        ResultOnly.Success();
+        return ResultOnly.Success();
     }
 }

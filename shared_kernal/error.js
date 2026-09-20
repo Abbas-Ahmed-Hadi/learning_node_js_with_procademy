@@ -1,4 +1,4 @@
-export class ErrorType {
+class ErrorType {
     static Failure = "Failure";
     static NotFound = "NotFound";
     static Validation= "Validation";
@@ -7,7 +7,7 @@ export class ErrorType {
 }
 
 
-export default class Error {
+class Error {
     #code;
     #description;
     #type;
@@ -42,11 +42,11 @@ export default class Error {
     }
     
     static get Empty() {
-        return this.#Empty.clone();
+        return this.#Empty;
     }
     
     static get NullValue() {
-        return this.#NullValue.clone();
+        return this.#NullValue;
     }
     
     static Failure(code, description) {
@@ -64,4 +64,8 @@ export default class Error {
     static Conflict(code, description) {
         return new Error(code, description, ErrorType.Conflict);
     }
+}
+
+export {
+    Error, ErrorType
 }

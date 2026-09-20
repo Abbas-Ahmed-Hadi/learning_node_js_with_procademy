@@ -1,5 +1,5 @@
 import { ErrorType } from "./error.js";
-import ValidationErrors from "./validation_error.js";
+import ValidationErrors from "./validation_errors.js";
 
 export class ResponseStatus {
     static fail = "fail";

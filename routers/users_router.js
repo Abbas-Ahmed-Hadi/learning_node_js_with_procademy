@@ -2,43 +2,9 @@ import express from "express";
 import UserController from "./../controllers/user_controller.js";
 import Response from "./../shared_kernal/response.js";
 import { Error, ErrorType } from "./../shared_kernal/error.js";
-// import ValidationErrors from "./../shared_kernal/validation_errors.js";
-import UsersError from "./../shared_kernal/users_error.js";
+import UserErrors from "./../shared_kernal/user_errors.js";
 import Validator from "./../shared_kernal/validator.js";
-
-export default class UsersRouter {
-    #router;
-
-    static() {
-        this.#router = express.Router();
-
-        this.#router.route('/')
-            .get(UserController.getAllUsers)
-            .post(UserEndpointValidator.ValidateUserRequestBody,
-                UserController.addUser);
-
-        this.#router.param("id",
-            UserEndpointValidator.ValidateUserIdParam);
-
-        this.#router.route("/:id")
-            .get(UserController.getUserById)
-            .put(UserEndpointValidator.ValidateUserRequestBody,
-                UserController.updateUserById)
-            .delete(UserController.deleteUserById);
-    }
-
-    get Router() {
-        if (!this.#router) {
-            throw new Exception("Users router must not be null.")
-        }
-
-        return this.#router;
-    }
-
-    get PathV1() {
-        return "/api/v1/users";
-    }
-}
+// import ValidationErrors from "./../shared_kernal/validation_errors.js";
 
 class UserEndpointValidator {
     static ValidateUserIdParam(_, res, next, value) {
@@ -48,13 +14,13 @@ class UserEndpointValidator {
             return Response.BadRequest(res,
                 new Error(
                     "Users.InvalidId",
-                    "User Id must be number.",
+                    "User Id must be number",
                     ErrorType.Validation));
         }
 
         if (userId < 1) {
             return Response.BadRequest(res,
-                UsersError.InvalidId(userId));
+                UserErrors.InvalidId(userId));
         }
 
         next();
@@ -88,5 +54,41 @@ class UserEndpointValidator {
         }
 
         next();
+    }
+}
+
+
+export default class UsersRouter {
+    
+    static #router;
+
+    static {
+        UsersRouter.#router = express.Router();
+
+        UsersRouter.#router.route('/')
+            .get(UserController.getAllUsers)
+            .post(UserEndpointValidator.ValidateUserRequestBody,
+                UserController.addUser);
+
+        UsersRouter.#router.param("id",
+            UserEndpointValidator.ValidateUserIdParam);
+
+        UsersRouter.#router.route("/:id")
+            .get(UserController.getUserById)
+            .put(UserEndpointValidator.ValidateUserRequestBody,
+                UserController.updateUserById)
+            .delete(UserController.deleteUserById);
+    }
+
+    static get Router() {
+        if (!UsersRouter.#router) {
+            throw new Exception("Users router must not be null.");
+        }
+
+        return UsersRouter.#router;
+    }
+
+    static get PathV1() {
+        return "/api/v1/users";
     }
 }
