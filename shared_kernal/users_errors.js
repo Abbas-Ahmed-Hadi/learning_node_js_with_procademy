@@ -20,7 +20,7 @@ export default class UsersErrors {
         
     static CreationFailure(user) {
         return new Error(
-            "User.CreationFailure",
+            "Users.CreationFailure",
             `User with user name: ${user.userName} is not created`, 
             ErrorType.Problem);
     }

@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 
-export default class UserSchema {
+export default class UsersSchema {
     static #schema;
     
     static get Schema() {
-        return UserSchema.#schema;
+        return UsersSchema.#schema;
     }
     
     static {
-       UserSchema.#schema = new mongoose.Schema({
+       UsersSchema.#schema = new mongoose.Schema({
            userName: {
                type: String,
                require: [true, "User name is required"],

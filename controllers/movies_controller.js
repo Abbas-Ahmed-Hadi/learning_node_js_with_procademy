@@ -1,11 +1,11 @@
-import MovieServices from "./../services/movie_services.js";
+import MoviesServices from "./../services/movies_services.js";
 import Response from "./../shared_kernal/response.js";
 import { ErrorType } from "./../shared_kernal/error.js";
 import Movie from "./../entities/movie.js";
 
 export default class MoviesController {
-    static getAllMovies(_, res) {
-        const result = MovieServices.getAllMovies();
+    static async getAllMovies(_, res) {
+        const result = await MoviesServices.getAllMovies();
         
         return result.isFailure
             ? Response.NotFound(res, result.error)
@@ -15,10 +15,10 @@ export default class MoviesController {
             });
     }
     
-    static getMovieById(req, res) {
+    static async getMovieById(req, res) {
         const movieId = Number.parseInt(req.params.id);
         
-        const result = MovieServices.getMovieById(movieId);
+        const result = await MoviesServices.getMovieById(movieId);
     
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
@@ -27,8 +27,8 @@ export default class MoviesController {
             : Response.OK(res, result.value);
     }
     
-    static addMovie(req, res) {
-        const movieId = Number.parseInt(req.params.id);
+    static async addMovie(req, res) {
+        const movieId = req.params.id;
         
         const newMovie = new Movie(
             movieId,
@@ -37,7 +37,7 @@ export default class MoviesController {
             req.body.duration, 
             req.body.rating);
         
-        const result = MovieServices.getMovieById(movieId, newMovie);
+        const result = await MoviesServices.getMovieById(movieId, newMovie);
     
         return result.isFailure
             ? result.error.type === ErrorType.Conflict
@@ -46,8 +46,8 @@ export default class MoviesController {
             : Response.Created(res, result.value);
     }
     
-    static updateMovieById(req, res) {
-        const movieId = Number.parseInt(req.params.id);
+    static async updateMovieById(req, res) {
+        const movieId = req.params.id;
         
         const movie = new Movie(
             movieId,
@@ -56,7 +56,7 @@ export default class MoviesController {
             req.body.duration, 
             req.body.rating);
         
-        const result = MovieServices.updateMovieById(movieId, movie);
+        const result = await MoviesServices.updateMovieById(movieId, movie);
     
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
@@ -65,10 +65,10 @@ export default class MoviesController {
             : Response.OK(res, result.value);
     }
     
-    static deleteMovieById(req, res) {
-        const movieId = Number.parseInt(req.params.id);
+    static async deleteMovieById(req, res) {
+        const movieId = req.params.id;
         
-        const result = MovieServices.deleteMovieById(movieId);
+        const result = await MoviesServices.deleteMovieById(movieId);
     
         return result.isFailure
             ? result.error.type === ErrorType.NotFound

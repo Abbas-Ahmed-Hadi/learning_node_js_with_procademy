@@ -19,7 +19,7 @@ export default class MoviesErrors {
         
     static CreationFailure(movie) {
         return new Error(
-            "User.CreationFailure",
+            "Movies.CreationFailure",
             `Movie with name: ${movie.name} is not created`, 
             ErrorType.Problem);
     }

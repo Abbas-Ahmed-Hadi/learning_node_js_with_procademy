@@ -1,11 +1,11 @@
-import UserServices from "./../services/user_service.js";
+import UsersServices from "./../services/users_services.js";
 import User from "./../entities/user.js";
 import Response from "./../shared_kernal/response.js";
 import { ErrorType } from "./../shared_kernal/error.js";
 
 export default class UsersController {
-    static getAllUsers(_, res) {
-        const result = UserServices.getAllUsers();
+    static async getAllUsers(_, res) {
+        const result = await UsersServices.getAllUsers();
 
         return result.isFailure
             ? Response.NotFound(res, result.error)
@@ -15,10 +15,10 @@ export default class UsersController {
             });
     }
 
-    static getUserById(req, res) {
-        const userId = Number.parseInt(req.params.id);
+    static async getUserById(req, res) {
+        const userId = req.params.id;
 
-        const result = UserServices.getUserById(userId);
+        const result = await UsersServices.getUserById(userId);
 
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
@@ -27,13 +27,13 @@ export default class UsersController {
             : Response.OK(res, result.value);
     }
 
-    static addUser(req, res) {
+    static async addUser(req, res) {
         const user = new User(
-            0,
+            null,
             req.body.userName,
             req.body.password);
 
-        const result = UserServices.addUser(user);
+        const result = await UsersServices.addUser(user);
 
         return result.isFailure
             ? result.error.type === ErrorType.Conflict
@@ -42,15 +42,15 @@ export default class UsersController {
             : Response.Created(res, result.value);
     }
 
-    static updateUserById(req, res) {
-        const userId = Number.parseInt(req.params.id);
+    static async updateUserById(req, res) {
+        const userId = req.params.id;
 
         const user = new User(
             userId, 
             req.body.userName,
             req.body.password);
 
-        const result = UserServices.updateUserById(userId, user);
+        const result = await UsersServices.updateUserById(userId, user);
 
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
@@ -59,10 +59,10 @@ export default class UsersController {
             : Response.OK(res, result.value);
     }
 
-    static deleteUserById(req, res) {
-        const userId = Number.parseInt(req.params.id);
+    static async deleteUserById(req, res) {
+        const userId = req.params.id;
 
-        const result = UserServices.deleteUserById(userId);
+        const result = await UsersServices.deleteUserById(userId);
 
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
