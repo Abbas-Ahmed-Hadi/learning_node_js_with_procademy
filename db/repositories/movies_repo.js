@@ -77,6 +77,9 @@ export default class MoviesRepository {
                     description: movie.description,
                     duration: movie.duration,
                     rating: movie.rating
+                }, {
+                    new: true,
+                    runValidators: true
                 });
 
             return new Movie(

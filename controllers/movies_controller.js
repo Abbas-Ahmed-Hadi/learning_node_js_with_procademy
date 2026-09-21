@@ -74,6 +74,6 @@ export default class MoviesController {
             ? result.error.type === ErrorType.NotFound
                 ? Response.NotFound(res, result.error)
                 : Response.InternalServerError(res, result.error)
-            : Response.OK(res);
+            : Response.NoContent(res);
     }
 }

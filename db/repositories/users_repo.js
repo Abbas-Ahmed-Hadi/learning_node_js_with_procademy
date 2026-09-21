@@ -68,6 +68,9 @@ export default class UsersRepository {
                 .findByIdAndUpdate(userId, {
                     userName: user.userName,
                     password: user.password
+                }, {
+                    new: true,
+                    runValidators: true
                 });
             
             return new User(

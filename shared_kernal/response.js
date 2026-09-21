@@ -8,19 +8,12 @@ export class ResponseStatus {
 
 
 export default class Response {
-    static OK(res, data = null) {
-        if (!data) {
-            res.status(200).json({
-                status: ResponseStatus.success,
-                code: 200
-            });
-        } else {
-            res.status(200).json({
-                status: ResponseStatus.success,
-                code: 200,
-                data: data
-            });
-        }
+    static OK(res, data) {
+        res.status(200).json({
+            status: ResponseStatus.success,
+            code: 200,
+            data: data
+        });
     }
 
     static Created(res, data) {
@@ -31,9 +24,17 @@ export default class Response {
         });
     }
 
-    static ValidationFailure(res, errors) {        
+    static NoContent(res) {
+        res.status(204).json({
+            status: ResponseStatus.success,
+            code: 204
+        });
+    }
+
+
+    static ValidationFailure(res, errors) {
         const validationErrors = new ValidationErrors(errors);
-        
+
         res.status(400).json({
             status: ResponseStatus.fail,
             code: validationErrors.code,
@@ -69,6 +70,7 @@ export default class Response {
             type: ResponseUtilities.errorTypeToString(error.type)
         });
     }
+
 
     static InternalServerError(res, error) {
         res.status(500).json({

@@ -11,12 +11,12 @@ export default class UsersSchema {
        UsersSchema.#schema = new mongoose.Schema({
            userName: {
                type: String,
-               require: [true, "User name is required"],
+               require: [true, "User name is required field!"],
                unique: [true, "User name must be unique"],
            },
            password: {
                type: String,
-               require: [true, "Password is required"]
+               require: [true, "Password is required field!"]
            }
        });
     }
