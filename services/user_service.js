@@ -3,6 +3,8 @@ import UserErrors from "./../shared_kernal/user_errors.js";
 import { Error, ErrorType } from "./../shared_kernal/error.js";
 import User from "./../entities/user.js";
 
+import UserRepository from "./../db/repositories/users_repo.js";
+
 export default class UserServices {
     static #users = new Array(0);
     static #latestUserId = 10;
@@ -39,15 +41,22 @@ export default class UserServices {
         return ResultWithValue.Success(user);
     }
     
-    static addUser(user) {
+    static async addUser(user) {
         const newUser = new User(
             UserServices.#getNewId(), 
             user.userName, 
             user.password);
         
-        UserServices.#users.push(newUser);
+        //UserServices.#users.push(newUser);
+        const userRepo = new UserRepository();
         
-        return !newUser
+        await userRepo.connect();
+        const newUserFromDB = await userRepo.addUser(newUser);
+        
+        console.log("UserServices.addUser:")
+        console.log("  - newUserFromDB:", newUserFromDB)
+        
+        return !newUserFromDB
             ? ResultOnly.Failure(UserErrors.CreationFailure(user))
             : ResultWithValue.Success(newUser);
     }

@@ -18,11 +18,11 @@ export default class Validator {
             return errors;
         }
 
-        if (minLength || value.length < minLength) {
+        if (minLength && value.length < minLength) {
             errors.push(`${filedName} must be more than ${minLength}`);
         }
         
-        if (maxLength || value.length > maxLength) {
+        if (maxLength && value.length > maxLength) {
             errors.push(`${filedName} must be less than ${maxLength}`);
         }
 
