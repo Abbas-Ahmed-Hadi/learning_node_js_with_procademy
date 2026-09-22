@@ -22,7 +22,7 @@ export default class MoviesServices {
         const movie = await movieRepo.getMovieById(id);
         
         return !movie
-            ? ResultOnly.Failure(MoviesErrors.NotFound(id))
+            ? ResultOnly.Failure(MoviesErrors.NotFoundById(id))
             : ResultWithValue.Success(movie);
     }
     

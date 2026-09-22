@@ -1,9 +1,22 @@
 import MoviesServices from "./../services/movies_services.js";
 import Response from "./../shared_kernal/response.js";
 import { ErrorType } from "./../shared_kernal/error.js";
-import Movie from "./../entities/movie.js";
+import MoviesEndpointsValidator from "./validators/movies_endpoints_validator.js";
 
 export default class MoviesController {
+    
+    static #CreateMovieFromRequestBody(req) {
+        const movieObj = {}
+        
+        for (const attributeName of MoviesEndpointsValidator.MovieObjectAttributes) {
+            if (attributeName in req.body) {
+                movieObj[attributeName] = req.body[attributeName];
+            }
+        }
+        
+        return movieObj;
+    }
+    
     static async getAllMovies(_, res) {
         const result = await MoviesServices.getAllMovies();
         
@@ -16,7 +29,7 @@ export default class MoviesController {
     }
     
     static async getMovieById(req, res) {
-        const movieId = Number.parseInt(req.params.id);
+        const movieId = req.params.id;
         
         const result = await MoviesServices.getMovieById(movieId);
     
@@ -28,16 +41,10 @@ export default class MoviesController {
     }
     
     static async addMovie(req, res) {
-        const movieId = req.params.id;
+        const newMovie = MoviesController
+            .#CreateMovieFromRequestBody(req);
         
-        const newMovie = new Movie(
-            movieId,
-            req.body.name, 
-            req.body.description, 
-            req.body.duration, 
-            req.body.rating);
-        
-        const result = await MoviesServices.getMovieById(movieId, newMovie);
+        const result = await MoviesServices.addMovie(newMovie);
     
         return result.isFailure
             ? result.error.type === ErrorType.Conflict
@@ -49,12 +56,8 @@ export default class MoviesController {
     static async updateMovieById(req, res) {
         const movieId = req.params.id;
         
-        const movie = new Movie(
-            movieId,
-            req.body.name, 
-            req.body.description, 
-            req.body.duration, 
-            req.body.rating);
+        const movie = MoviesController
+            .#CreateMovieFromRequestBody(req);
         
         const result = await MoviesServices.updateMovieById(movieId, movie);
     
@@ -69,7 +72,7 @@ export default class MoviesController {
         const movieId = req.params.id;
         
         const result = await MoviesServices.deleteMovieById(movieId);
-    
+        
         return result.isFailure
             ? result.error.type === ErrorType.NotFound
                 ? Response.NotFound(res, result.error)

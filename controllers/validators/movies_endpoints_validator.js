@@ -5,6 +5,18 @@ import Validator from "./../../shared_kernal/validator.js";
 
 export default class MoviesEndpointsValidator {
     
+    static #MovieObjectAttributes = [
+        "name", "description", "duration", "rating",
+        "totalRating", "releaseYear", "releaseDate",
+        "geners", "directors", "coverImage", "actors",
+        "price"
+    ];
+    
+    static get MovieObjectAttributes() {
+        return MoviesEndpointsValidator.#MovieObjectAttributes;
+    }
+    
+    
     static ValidateMovieRequestBody(req, res, next) {
         const name = req.body.name;
         const description = req.body.description;

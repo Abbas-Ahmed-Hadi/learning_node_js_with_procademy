@@ -10,13 +10,22 @@ export default class MoviesRepository {
             const allMovies = await MoviesModule.Module
                 .find();
 
-            const movies = allMovies.map(m => {
+            const movies = allMovies.map(movie => {
                 return new Movie(
-                    m._id.toString(),
-                    m.name,
-                    m.description,
-                    m.duration,
-                    m.rating);
+                    movie._id.toString(),
+                    movie.name,
+                    movie.description,
+                    movie.duration,
+                    movie.rating,
+                    movie.totalRating,
+                    movie.releaseYear,
+                    movie.releaseDate,
+                    movie.createdAt,
+                    movie.geners,
+                    movie.directors,
+                    movie.coverImage,
+                    movie.actors,
+                    movie.price);
             });
 
             return movies;
@@ -37,7 +46,16 @@ export default class MoviesRepository {
                 movie.name,
                 movie.description,
                 movie.duration,
-                movie.rating
+                movie.rating,
+                movie.totalRating,
+                movie.releaseYear,
+                movie.releaseDate,
+                movie.createdAt,
+                movie.geners,
+                movie.directors,
+                movie.coverImage,
+                movie.actors,
+                movie.price
             );
         } catch (err) {
             console.log("An Error Occur:", err.message);
@@ -48,19 +66,23 @@ export default class MoviesRepository {
     async addMovie(movie) {
         try {
             const addedMovieDoc = await MoviesModule.Module
-                .create({
-                    name: movie.name,
-                    description: movie.description,
-                    duration: movie.duration,
-                    rating: movie.rating
-                });
+                .create(movie);
 
             return new Movie(
                 addedMovieDoc._id.toString(),
                 addedMovieDoc.name,
                 addedMovieDoc.description,
                 addedMovieDoc.duration,
-                addedMovieDoc.rating
+                addedMovieDoc.rating,
+                addedMovieDoc.totalRating,
+                addedMovieDoc.releaseYear,
+                addedMovieDoc.releaseDate,
+                addedMovieDoc.createdAt,
+                addedMovieDoc.geners,
+                addedMovieDoc.directors,
+                addedMovieDoc.coverImage,
+                addedMovieDoc.actors,
+                addedMovieDoc.price
             );
         } catch (err) {
             console.log("An Error Occur:", err.message);
@@ -72,12 +94,7 @@ export default class MoviesRepository {
         try {
             const movieId = new mongoose.Types.ObjectId(id);
             const updatedMovie = await MoviesModule.Module
-                .findByIdAndUpdate(movieId, {
-                    name: movie.name,
-                    description: movie.description,
-                    duration: movie.duration,
-                    rating: movie.rating
-                }, {
+                .findByIdAndUpdate(movieId, movie, {
                     new: true,
                     runValidators: true
                 });
@@ -87,7 +104,16 @@ export default class MoviesRepository {
                 updatedMovie.name,
                 updatedMovie.description,
                 updatedMovie.duration,
-                updatedMovie.rating
+                updatedMovie.rating,
+                updatedMovie.totalRating,
+                updatedMovie.releaseYear,
+                updatedMovie.releaseDate,
+                updatedMovie.createdAt,
+                updatedMovie.geners,
+                updatedMovie.directors,
+                updatedMovie.coverImage,
+                updatedMovie.actors,
+                updatedMovie.price
             );
         } catch (err) {
             console.log("An Error Occur:", err.message);
@@ -100,7 +126,7 @@ export default class MoviesRepository {
             const movieId = new mongoose.Types.ObjectId(id);
             const deletedMovie = await MoviesModule.Module
                 .findByIdAndDelete(movieId);
-
+            
             return Boolean(deletedMovie);
         } catch (err) {
             console.log("An Error Occur:", err.message);
