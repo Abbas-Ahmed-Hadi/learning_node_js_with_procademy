@@ -1,4 +1,5 @@
 import StringUtlities from "./string_utilities.js";
+import ValidatorExtensions from "./validator_extensions.js";
 
 export default class Validator {
     static ValidateString(
@@ -19,10 +20,11 @@ export default class Validator {
         }
 
         if (minLength && value.length < minLength) {
-            errors.push(`${fieldName} must be more than ${minLength}`);
+            errors.push(`${fieldName} length must be more than ${minLength}`);
         }
         
-        if (maxLength && value.length > maxLength) {         errors.push(`${fieldName} must be less than ${maxLength}`);
+        if (maxLength && value.length > maxLength) {
+            errors.push(`${fieldName} length must be less than ${maxLength}`);
         }
 
         return errors;
@@ -54,5 +56,36 @@ export default class Validator {
         }
 
         return errors;
+    }
+    
+    static ValidateObjectFields(
+        sourceFields, 
+        validationFieldsInfo, 
+        fnValidator) {
+        let validationErrors = new Array(0);
+
+        for (const validationFieldInfo of validationFieldsInfo) {
+
+            const sourceFieldValue = sourceFields[validationFieldInfo[0]];
+
+            if (!sourceFieldValue) continue;
+
+            const fieldErrors = fnValidator(
+                sourceFieldValue,        // Value
+                validationFieldInfo[0],  // Field Name
+                validationFieldInfo[1],  // Field Minimum
+                validationFieldInfo[2]); // Field Maximum
+
+            if (fieldErrors.length !== 0) {
+                const errors = ValidatorExtensions
+                    .FormatArrayOfErrors(
+                        fieldErrors,
+                        validationFieldInfo[0]);
+
+                validationErrors = validationErrors.concat(errors);
+            }
+        }
+
+        return validationErrors;
     }
 }

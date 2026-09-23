@@ -1,4 +1,44 @@
 export default class Movie {
+    
+    static #ObjectAttributesNames = [
+        "name", "description", "duration", "rating",
+        "totalRating", "releaseYear", "releaseDate",
+        "geners", "directors", "coverImage", "actors",
+        "price"
+    ];
+
+    // @info each string attribute with its:
+    // Name, MinimumLength, MaximumLength
+    static #StringTypeAttributesValidationInfo = [
+        ["name", 3, 50],
+        ["description", 10, 500],
+        ["coverImage", 24, 150]
+    ];
+
+    // @info each number attribute with its:
+    // Name, MinimumValue, MaximumValur
+    // if minValue, or maxValue its value 
+    // null then it optional
+    static #NumberTypeAttributesValidationInfo = [
+        ["rating", 0, 10],
+        ["totalRating", 0, Number.POSITIVE_INFINITY],
+        ["releaseYear", 1700, 3000],
+        ["price", 0.99, Number.POSITIVE_INFINITY]
+    ];
+    
+    
+    static get AttributesNames() {
+        return Movie.#ObjectAttributesNames;
+    }
+    
+    static get StringTypeAttributesValidationInfo() {
+        return Movie.#StringTypeAttributesValidationInfo;
+    }
+    
+    static get NumberTypeAttributesValidationInfo() {
+        return Movie.#NumberTypeAttributesValidationInfo;
+    }
+    
 
     constructor(id, name, description, duration, rating,
         totalRating, releaseYear, releaseDate, createdAt,
