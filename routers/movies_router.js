@@ -10,8 +10,7 @@ export default class MoviesRouter {
         
         MoviesRouter.#router.route("/")
             .get(MoviesController.getAllMovies)
-            .post(
-                // MoviesEndpointsValidator.ValidateMovieRequestBody, 
+            .post(MoviesEndpointsValidator.ValidateMovieRequestBody, 
                 MoviesController.addMovie);
         
         MoviesRouter.#router.param("id",
@@ -19,8 +18,7 @@ export default class MoviesRouter {
         
         MoviesRouter.#router.route("/:id")
             .get(MoviesController.getMovieById)
-            .put(
-                // MoviesEndpointsValidator.ValidateMovieRequestBody, 
+            .put(MoviesEndpointsValidator.ValidateMovieRequestBody, 
                 MoviesController.updateMovieById)
             .delete(MoviesController.deleteMovieById);
     }
