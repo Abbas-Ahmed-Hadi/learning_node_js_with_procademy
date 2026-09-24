@@ -1,14 +1,14 @@
 import MoviesServices from "./../services/movies_services.js";
 import Response from "./../shared_kernal/response.js";
 import { ErrorType } from "./../shared_kernal/error.js";
-import MoviesEndpointsValidator from "./validators/movies_endpoints_validator.js";
+import Movie from "./../entities/movie.js";
 
 export default class MoviesController {
     
     static #CreateMovieFromRequestBody(req) {
         const movieObj = {}
         
-        for (const attributeName of MoviesEndpointsValidator.MovieObjectAttributes) {
+        for (const attributeName of Movie.AttributesNames) {
             if (attributeName in req.body) {
                 movieObj[attributeName] = req.body[attributeName];
             }
@@ -17,8 +17,24 @@ export default class MoviesController {
         return movieObj;
     }
     
-    static async getAllMovies(_, res) {
-        const result = await MoviesServices.getAllMovies();
+    static async getAllMovies(req, res) {
+        
+        let queryStringAsString = JSON.stringify(req.query);
+        
+        queryStringAsString = queryStringAsString
+            .replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+        
+        const queryStringObject = JSON.parse(queryStringAsString);
+        
+        const queryObject = {};
+        
+        for (const attributeName of Movie.AttributesNames) {
+            if (attributeName in queryStringObject) {
+                queryObject[attributeName] = req.query[attributeName];
+            }
+        }
+        
+        const result = await MoviesServices.getAllMovies(queryObject);
         
         return result.isFailure
             ? Response.NotFound(res, result.error)

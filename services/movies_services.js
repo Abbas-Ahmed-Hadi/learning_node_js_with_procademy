@@ -5,9 +5,9 @@ import MoviesErrors from "./../shared_kernal/movies_errors.js";
 
 export default class MoviesServices {
     
-    static async getAllMovies() {
+    static async getAllMovies(queryObject) {
         const movieRepo = new MoviesRepository();
-        const movies = await movieRepo.getAllMovies();
+        const movies = await movieRepo.getAllMovies(queryObject);
         
         return !movies || movies.length === 0
             ? ResultOnly.Failure(new Error(

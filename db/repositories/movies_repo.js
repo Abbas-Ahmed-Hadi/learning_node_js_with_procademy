@@ -5,10 +5,10 @@ import Movie from "./../../entities/movie.js";
 export default class MoviesRepository {
     constructor() { }
 
-    async getAllMovies() {
+    async getAllMovies(queryObject) {
         try {
             const allMovies = await MoviesModule.Module
-                .find();
+                .find(queryObject);
 
             const movies = allMovies.map(movie => {
                 return new Movie(
