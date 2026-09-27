@@ -62,6 +62,8 @@ export default class MoviesRepository {
                 
             if (sortingQueryArray && sortingQueryArray.length !== 0) {
                 query = query.sort(sortingQueryArray.join(" "));
+            } else {
+                query = query.sort("-createdAt");
             }
             
             if (limitedFields && limitedFields.length !== 0) {
