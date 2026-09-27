@@ -1,4 +1,4 @@
-
+import StringUtlities from "./../shared_kernal/string_utilities.js";
 export default class Controller {
     static #FiltrationOperatorsSymboles = {
         gte: "gte",
@@ -8,17 +8,47 @@ export default class Controller {
         eq: "eq",
         ne: "ne"
     };
-
+    
+    static #SortingOperatorsSymboles = {
+        sort: "sort",
+        limit: "limit",
+        page: "page"
+    };
+    
+    static #SortingTypes = {
+        ascending: "asc",
+        descending: "des"
+    }
+    
+    
     static get FiltrationOperatorsSymboles() {
         return Controller.#FiltrationOperatorsSymboles;
     }
 
+    static get SortingOperatorsSymboles() {
+        return Controller.#SortingOperatorsSymboles;
+    }
+
+    static get SortingTypes() {
+        return Controller.#SortingTypes;
+    }
+    
+    static GetQuerySortingFieldsFromRequestQueryString(
+        requestQueryString,
+        fieldsSeparator = ',') {
+            
+            return StringUtlities.
+                IsNullOrWhiteSpace(requestQueryString.sort)
+                ? []
+                : requestQueryString.sort.split(fieldsSeparator);
+        }
+
     static GetRequestBodyFieldsWithItsFilters(
-        request,
+        requestQueryString,
         separator = ':',
         replaceSeparatorBy = '":') {
 
-        const queryStrAsStr = JSON.stringify(request.query);
+        const queryStrAsStr = JSON.stringify(requestQueryString);
         const queryStrAsObj = JSON.parse(queryStrAsStr);
 
         for (const objKey of Object.keys(queryStrAsObj)) {

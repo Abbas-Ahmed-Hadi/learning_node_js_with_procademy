@@ -8,24 +8,24 @@ export default class MoviesEndpointsValidator {
     static ValidateMovieRequestBody(req, res, next) {
         let validationErrors = new Array(0);
 
-        const stringTypeAttributesValidationErrors = Validator
+        const stringTypeFieldsValidationErrors = Validator
             .ValidateObjectFields(
                 req.body,
-                Movie.StringTypeAttributesValidationInfo,
+                Movie.StringTypeFieldsValidationInfo,
                 Validator.ValidateString
             );
 
-        const numberTypeAttributesValidationErrors = Validator
+        const numberTypeFieldsValidationErrors = Validator
             .ValidateObjectFields(
                 req.body,
-                Movie.NumberTypeAttributesValidationInfo,
+                Movie.NumberTypeFieldsValidationInfo,
                 Validator.ValidateNumber
             );
 
         validationErrors = validationErrors
             .concat(
-                stringTypeAttributesValidationErrors,
-                numberTypeAttributesValidationErrors
+                stringTypeFieldsValidationErrors,
+                numberTypeFieldsValidationErrors
             );
 
         if (validationErrors.length !== 0) {
@@ -40,7 +40,7 @@ export default class MoviesEndpointsValidator {
         if (typeof value !== "string" ||
             value.length !== 24) {
             return Response
-                .BadRequest(res, MoviesErrors.InvalidId(userId));
+                .BadRequest(res, MoviesErrors.InvalidId(value));
         }
 
         next();

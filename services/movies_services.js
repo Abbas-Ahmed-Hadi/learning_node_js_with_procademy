@@ -5,9 +5,20 @@ import MoviesErrors from "./../shared_kernal/movies_errors.js";
 
 export default class MoviesServices {
     
-    static async getAllMovies(queryObject) {
+    static async Seeds(times = 10) {
+        const movies = await MoviesRepository.Seed(times);
+        
+        return !movies || movies.length === 0
+            ? ResultOnly.Failure(new Error(
+                "Movies.NoSeeds",
+                "There is no movie",
+                ErrorType.NotFound))
+            : ResultWithValue.Success(movies);
+    }
+    
+    static async getAllMovies(queryObject, sortingQueryArray) {
         const movieRepo = new MoviesRepository();
-        const movies = await movieRepo.getAllMovies(queryObject);
+        const movies = await movieRepo.getAllMovies(queryObject, sortingQueryArray);
         
         return !movies || movies.length === 0
             ? ResultOnly.Failure(new Error(

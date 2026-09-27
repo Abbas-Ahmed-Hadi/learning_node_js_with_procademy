@@ -12,6 +12,9 @@ export default class MoviesRouter {
             .get(MoviesController.getAllMovies)
             .post(MoviesEndpointsValidator.ValidateMovieRequestBody, 
                 MoviesController.addMovie);
+                
+        MoviesRouter.#router.route("/seeds/:times")
+            .get(MoviesController.Seeds);
         
         MoviesRouter.#router.param("id",
             MoviesEndpointsValidator.ValidateMovieIdParam);

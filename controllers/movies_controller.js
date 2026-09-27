@@ -17,11 +17,25 @@ export default class MoviesController {
 
         return movieObj;
     }
+    
+    static async Seeds(req, res) {
+        const times = req.params.times ?? 10;
+        
+        const result = await MoviesServices
+            .Seeds(times);
+
+        return result.isFailure
+            ? Response.NotFound(res, result.error)
+            : Response.OK(res, {
+                count: result.value.length,
+                movies: result.value
+            });
+    }
 
     static async getAllMovies(req, res) {
-        
+              
         const mainQueryObject = Controller
-            .GetRequestBodyFieldsWithItsFilters(req);
+            .GetRequestBodyFieldsWithItsFilters(req.query);
         
         const queryObject = {};
         
@@ -30,8 +44,14 @@ export default class MoviesController {
                 queryObject[fieldName] = mainQueryObject[fieldName];
             }
         }
-
-        const result = await MoviesServices.getAllMovies(queryObject);
+        
+        console.log("req.query:", req.query)
+        
+        const sortingQueryArray = Controller
+            .GetQuerySortingFieldsFromRequestQueryString(req.query);
+            
+        const result = await MoviesServices
+            .getAllMovies(queryObject, sortingQueryArray);
 
         return result.isFailure
             ? Response.NotFound(res, result.error)

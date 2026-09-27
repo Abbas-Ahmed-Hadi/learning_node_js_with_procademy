@@ -35,7 +35,8 @@ export default class MoviesSchema {
             },
             createdAt: {
                 type: Date,
-                default: Date.now()
+                default: Date.now(),
+                select: false
             },
             geners: {
                 type: [String],
