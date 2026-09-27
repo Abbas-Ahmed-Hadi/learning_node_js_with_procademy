@@ -17,7 +17,7 @@ export default class MoviesServices {
     }
     
     static async getMovies(
-        queryObject, 
+        queryObjectWithItsFilters, 
         sortingQueryArray,
         limitedFields,
         page,
@@ -26,7 +26,7 @@ export default class MoviesServices {
 
         const movies = await movieRepo
             .getMovies(
-                queryObject, 
+                queryObjectWithItsFilters, 
                 sortingQueryArray,
                 limitedFields,
                 page,

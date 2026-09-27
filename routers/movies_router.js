@@ -15,6 +15,9 @@ export default class MoviesRouter {
                 
         MoviesRouter.#router.route("/seeds/:times")
             .get(MoviesController.Seeds);
+            
+        MoviesRouter.#router.route("/highest-rated")
+            .get(MoviesController.getHighestRatedMovies);
         
         MoviesRouter.#router.param("id",
             MoviesEndpointsValidator.ValidateMovieIdParam);

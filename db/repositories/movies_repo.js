@@ -51,14 +51,14 @@ export default class MoviesRepository {
     }
 
     async getMovies(
-        queryObject,
+        queryObjectWithItsFilters,
         sortingQueryArray,
         limitedFields,
         page,
         size) {
         try {
             let query = MoviesModule.Module
-                .find(queryObject);
+                .find(queryObjectWithItsFilters);
                 
             if (sortingQueryArray && sortingQueryArray.length !== 0) {
                 query = query.sort(sortingQueryArray.join(" "));

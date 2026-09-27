@@ -18,9 +18,56 @@ export default class MoviesController {
         return movieObj;
     }
     
+    static async #getMoviesWithSecondaryRequestQuery(
+        req,
+        res,
+        secondaryRequestQuery = null) {
+
+        const queryStringObject = {
+            ... secondaryRequestQuery,
+            ... req.query
+        };
+
+        const mainQueryObjectWithItsFilters = Controller
+            .GetRequestBodyFieldsWithItsFilters(
+                queryStringObject);
+
+        const queryObjectWithItsFilters = {};
+
+        for (const fieldName of Movie.FieldsNames) {
+            if (fieldName in mainQueryObjectWithItsFilters) {
+                queryObjectWithItsFilters[fieldName] = 
+                    mainQueryObjectWithItsFilters[fieldName];
+            }
+        }
+
+        const sortingQueryArray = Controller
+            .GetQuerySortingFieldsFromRequestQueryString(
+                queryStringObject);
+
+        const limitedFields = Controller
+            .GetLimitedFieldsFromRequestQueryString(
+                queryStringObject);
+
+        const result = await MoviesServices
+            .getMovies(
+                queryObjectWithItsFilters,
+                sortingQueryArray,
+                limitedFields,
+                queryStringObject.page ?? 1,
+                queryStringObject.size ?? 10);
+
+        return result.isFailure
+            ? Response.NotFound(res, result.error)
+            : Response.OK(res, {
+                count: result.value.length,
+                movies: result.value
+            });
+    }
+
     static async Seeds(req, res) {
         const times = req.params.times ?? 10;
-        
+
         const result = await MoviesServices
             .Seeds(times);
 
@@ -32,39 +79,27 @@ export default class MoviesController {
             });
     }
 
-    static async getMovies(req, res) {
-              
-        const mainQueryObject = Controller
-            .GetRequestBodyFieldsWithItsFilters(req.query);
+    static async getHighestRatedMovies(req, res) {
         
-        const queryObject = {};
-        
-        for (const fieldName of Movie.FieldsNames) {
-            if (fieldName in mainQueryObject) {
-                queryObject[fieldName] = mainQueryObject[fieldName];
-            }
+        const secondaryRequestQuery = {
+            sort: "-rating",
+            page: "1",
+            size: "5"
         }
         
-        const sortingQueryArray = Controller
-            .GetQuerySortingFieldsFromRequestQueryString(req.query);
-        
-        const limitedFields = Controller
-            .GetLimitedFieldsFromRequestQueryString(req.query);
-        
-        const result = await MoviesServices
-            .getMovies(
-                queryObject, 
-                sortingQueryArray,
-                limitedFields,
-                req.query.page ?? 1,
-                req.query.size ?? 10);
+        return await MoviesController
+            .#getMoviesWithSecondaryRequestQuery(
+                req,
+                res,
+                secondaryRequestQuery);
+    }
 
-        return result.isFailure
-            ? Response.NotFound(res, result.error)
-            : Response.OK(res, {
-                count: result.value.length,
-                movies: result.value
-            });
+    static async getMovies(req, res) {
+
+        return await MoviesController
+            .#getMoviesWithSecondaryRequestQuery(
+                req,
+                res);
     }
 
     static async getMovieById(req, res) {
