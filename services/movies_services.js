@@ -16,9 +16,21 @@ export default class MoviesServices {
             : ResultWithValue.Success(movies);
     }
     
-    static async getAllMovies(queryObject, sortingQueryArray) {
+    static async getMovies(
+        queryObject, 
+        sortingQueryArray,
+        limitedFields,
+        page,
+        size) {
         const movieRepo = new MoviesRepository();
-        const movies = await movieRepo.getAllMovies(queryObject, sortingQueryArray);
+
+        const movies = await movieRepo
+            .getMovies(
+                queryObject, 
+                sortingQueryArray,
+                limitedFields,
+                page,
+                size);
         
         return !movies || movies.length === 0
             ? ResultOnly.Failure(new Error(

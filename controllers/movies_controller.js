@@ -32,7 +32,7 @@ export default class MoviesController {
             });
     }
 
-    static async getAllMovies(req, res) {
+    static async getMovies(req, res) {
               
         const mainQueryObject = Controller
             .GetRequestBodyFieldsWithItsFilters(req.query);
@@ -45,13 +45,19 @@ export default class MoviesController {
             }
         }
         
-        console.log("req.query:", req.query)
-        
         const sortingQueryArray = Controller
             .GetQuerySortingFieldsFromRequestQueryString(req.query);
-            
+        
+        const limitedFields = Controller
+            .GetLimitedFieldsFromRequestQueryString(req.query);
+        
         const result = await MoviesServices
-            .getAllMovies(queryObject, sortingQueryArray);
+            .getMovies(
+                queryObject, 
+                sortingQueryArray,
+                limitedFields,
+                req.query.page ?? 1,
+                req.query.size ?? 10);
 
         return result.isFailure
             ? Response.NotFound(res, result.error)

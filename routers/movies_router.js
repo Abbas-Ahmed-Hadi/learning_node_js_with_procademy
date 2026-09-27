@@ -9,7 +9,7 @@ export default class MoviesRouter {
         MoviesRouter.#router = express.Router();
         
         MoviesRouter.#router.route("/")
-            .get(MoviesController.getAllMovies)
+            .get(MoviesController.getMovies)
             .post(MoviesEndpointsValidator.ValidateMovieRequestBody, 
                 MoviesController.addMovie);
                 

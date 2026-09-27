@@ -37,11 +37,21 @@ export default class Controller {
         requestQueryString,
         fieldsSeparator = ',') {
             
-            return StringUtlities.
+        return StringUtlities.
                 IsNullOrWhiteSpace(requestQueryString.sort)
                 ? []
                 : requestQueryString.sort.split(fieldsSeparator);
-        }
+    }
+    
+    static GetLimitedFieldsFromRequestQueryString(
+        requestQueryString,
+        fieldsSeparator = ',') {
+            
+        return StringUtlities.
+                IsNullOrWhiteSpace(requestQueryString.fields)
+                ? []
+                : requestQueryString.fields.split(fieldsSeparator);
+    }
 
     static GetRequestBodyFieldsWithItsFilters(
         requestQueryString,

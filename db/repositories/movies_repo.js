@@ -50,15 +50,30 @@ export default class MoviesRepository {
         }
     }
 
-    async getAllMovies(queryObject, sortingQueryArray) {
+    async getMovies(
+        queryObject,
+        sortingQueryArray,
+        limitedFields,
+        page,
+        size) {
         try {
             let query = MoviesModule.Module
-                .find(queryObject)
-                .select("-__v");
+                .find(queryObject);
                 
             if (sortingQueryArray && sortingQueryArray.length !== 0) {
-                console.log("sortingQueryArray (repo):", sortingQueryArray)
                 query = query.sort(sortingQueryArray.join(" "));
+            }
+            
+            if (limitedFields && limitedFields.length !== 0) {
+                query = query.select(limitedFields.join(" "));
+            } else {
+                query = query.select("-__v");
+            }
+            
+            if (page && Math.floor(page) > -1) {
+                query = query
+                    .skip((page - 1) * size)
+                    .limit(size)
             }
                 
             const allMovies = await query;
