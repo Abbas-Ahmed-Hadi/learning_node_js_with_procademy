@@ -9,29 +9,10 @@ export default class Controller {
         ne: "ne"
     };
     
-    static #SortingOperatorsSymboles = {
-        sort: "sort",
-        limit: "limit",
-        page: "page"
-    };
-    
-    static #SortingTypes = {
-        ascending: "asc",
-        descending: "des"
-    }
-    
-    
     static get FiltrationOperatorsSymboles() {
         return Controller.#FiltrationOperatorsSymboles;
     }
-
-    static get SortingOperatorsSymboles() {
-        return Controller.#SortingOperatorsSymboles;
-    }
-
-    static get SortingTypes() {
-        return Controller.#SortingTypes;
-    }
+    
     
     static GetQuerySortingFieldsFromRequestQueryString(
         requestQueryString,
@@ -61,17 +42,15 @@ export default class Controller {
         const queryStrAsStr = JSON.stringify(requestQueryString);
         const queryStrAsObj = JSON.parse(queryStrAsStr);
 
-        for (const objKey of Object.keys(queryStrAsObj)) {
+        for (const [objKey, objValue] of Object.entries(queryStrAsObj)) {
 
-            if (typeof queryStrAsObj[objKey] !== "string") {
+            if (typeof objValue !== "string") {
                 continue;
             }
 
-            for (const opKey of Object.keys(Controller.FiltrationOperatorsSymboles)) {
+            for (const opValue of Object.values(Controller.FiltrationOperatorsSymboles)) {
 
-                if (!queryStrAsObj[objKey]
-                    .includes(Controller
-                        .FiltrationOperatorsSymboles[opKey])) {
+                if (!objValue.includes(opValue)) {
                     continue;
                 }
 
