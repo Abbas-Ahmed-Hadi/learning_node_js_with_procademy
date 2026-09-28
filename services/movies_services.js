@@ -16,6 +16,21 @@ export default class MoviesServices {
             : ResultWithValue.Success(movies);
     }
     
+    
+    static async getMoviesStatisticsByYearOfRelease(releaseYear) {
+        const moviesRepo = new MoviesRepository();
+        
+        const statistics = await moviesRepo
+            .getMoviesStatisticsByYearOfRelease(releaseYear);
+            
+        return !statistics || statistics.length === 0
+            ? ResultOnly.Failure(new Error(
+                "Movies.NoMovieInThatYear",
+                `There is no movie published in ${releaseYear} year`,
+                ErrorType.NotFound))
+            : ResultWithValue.Success(statistics);
+    }
+    
     static async getMovies(
         queryObjectWithItsFilters, 
         sortingQueryArray,

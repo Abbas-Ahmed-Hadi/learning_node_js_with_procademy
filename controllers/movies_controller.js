@@ -44,7 +44,7 @@ export default class MoviesController {
         const sortingQueryArray = Controller
             .GetQuerySortingFieldsFromRequestQueryString(
                 queryStringObject);
-
+                
         const limitedFields = Controller
             .GetLimitedFieldsFromRequestQueryString(
                 queryStringObject);
@@ -64,6 +64,7 @@ export default class MoviesController {
                 movies: result.value
             });
     }
+    
 
     static async Seeds(req, res) {
         const times = req.params.times ?? 10;
@@ -76,6 +77,24 @@ export default class MoviesController {
             : Response.OK(res, {
                 count: result.value.length,
                 movies: result.value
+            });
+    }
+    
+    
+    static async getMoviesStatisticsByYearOfRelease(req, res)
+    {
+        const releaseYear = Number.parseInt(req.params.releaseYear);
+    
+        const result = await MoviesServices
+            .getMoviesStatisticsByYearOfRelease(releaseYear);
+            
+        return result.isFailure
+            ? result.error.type === ErrorType.NotFound
+                ? Response.NotFound(res, result.error)
+                : Response.InternalServerError(res, result.error)
+            : Response.OK(res, {
+                count: result.value.length,
+                statistices: result.value
             });
     }
 

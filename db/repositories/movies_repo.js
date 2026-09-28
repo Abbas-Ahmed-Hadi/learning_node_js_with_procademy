@@ -50,6 +50,36 @@ export default class MoviesRepository {
         }
     }
 
+    
+    async getMoviesStatisticsByYearOfRelease(releaseYear) {
+        try {
+            const statistics = await MoviesModule.Module
+                .aggregate([
+                    { $match: { releaseYear: { $eq: releaseYear } } },
+                    {
+                        $group: {
+                            _id: releaseYear,
+                            minRating:   { $min: "$rating" },
+                            avgRating:   { $avg: "$rating" },
+                            maxRating:   { $max: "$rating" },
+                            totalRating: { $sum: "$totalRating" },
+                            minPrice:    { $min: "$price" },
+                            avgPrice:    { $avg: "$price" },
+                            maxPrice:    { $max: "$price" },
+                            totalPrice:  { $sum: "$price" },
+                            count:       { $sum: 1 }
+                        }
+                    }
+                ]);
+            
+            return statistics;
+        } catch (err) {
+            console.log("An Error Occur:", err.message);
+            return [];
+        }
+    }
+
+
     async getMovies(
         queryObjectWithItsFilters,
         sortingQueryArray,

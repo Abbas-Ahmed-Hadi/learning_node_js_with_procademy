@@ -15,7 +15,13 @@ export default class MoviesRouter {
                 
         MoviesRouter.#router.route("/seeds/:times")
             .get(MoviesController.Seeds);
-            
+        
+        MoviesRouter.#router.param("releaseYear",
+            MoviesEndpointsValidator.ValidateMovieReleaseYearParam);
+        
+        MoviesRouter.#router.route("/statistics/:releaseYear")
+            .get(MoviesController.getMoviesStatisticsByYearOfRelease);
+        
         MoviesRouter.#router.route("/highest-rated")
             .get(MoviesController.getHighestRatedMovies);
         
