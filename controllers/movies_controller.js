@@ -81,6 +81,24 @@ export default class MoviesController {
     }
     
     
+    static async getMoviesByGener(req, res) {
+    
+        const gener = req.params.gener;
+    
+        const result = await MoviesServices
+            .getMoviesByGener(gener);
+            
+        return result.isFailure
+            ? result.error.type === ErrorType.NotFound
+                ? Response.NotFound(res, result.error)
+                : Response.InternalServerError(res, result.error)
+            : Response.OK(res, {
+                count: result.value.length,
+                statistices: result.value
+            });
+    }
+    
+    
     static async getMoviesStatisticsByYearOfRelease(req, res)
     {
         const releaseYear = Number.parseInt(req.params.releaseYear);

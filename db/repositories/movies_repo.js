@@ -50,6 +50,33 @@ export default class MoviesRepository {
         }
     }
 
+    async getMoviesByGener(gener) {
+        try {
+            const allMovies = await MoviesModule.Module
+                .aggregate([
+                    { $match: { geners: { $eq: [ gener ] } } }
+                ]);
+            
+            const movies = allMovies
+                .map(m => {
+                    const newMovie = {};
+                    for (const [key, value] of Object.entries(m)) {
+                        if (key === "_id") {
+                            newMovie["id"] = value.toString();
+                        } else if (key !== "__v") {
+                            newMovie[key] = value;
+                        }
+                    }
+                    
+                    return newMovie;
+                });
+            
+            return movies;
+        } catch (err) {
+            console.log("An Error Occur:", err.message);
+            return [];
+        }
+    }
     
     async getMoviesStatisticsByYearOfRelease(releaseYear) {
         try {

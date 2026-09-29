@@ -17,6 +17,20 @@ export default class MoviesServices {
     }
     
     
+    static async getMoviesByGener(gener) {
+        const moviesRepo = new MoviesRepository();
+        
+        const movies = await moviesRepo
+            .getMoviesByGener(gener);
+            
+        return !movies || movies.length === 0
+            ? ResultOnly.Failure(new Error(
+                "Movies.NotFound",
+                `There is no movie published with '${gener}' gener`,
+                ErrorType.NotFound))
+            : ResultWithValue.Success(movies);
+    }
+    
     static async getMoviesStatisticsByYearOfRelease(releaseYear) {
         const moviesRepo = new MoviesRepository();
         
@@ -25,7 +39,7 @@ export default class MoviesServices {
             
         return !statistics || statistics.length === 0
             ? ResultOnly.Failure(new Error(
-                "Movies.NoMovieInThatYear",
+                "Movies.NotFound",
                 `There is no movie published in ${releaseYear} year`,
                 ErrorType.NotFound))
             : ResultWithValue.Success(statistics);
@@ -49,7 +63,7 @@ export default class MoviesServices {
         
         return !movies || movies.length === 0
             ? ResultOnly.Failure(new Error(
-                "Movies.NoMovieFound",
+                "Movies.NotFound",
                 "There is no movie",
                 ErrorType.NotFound))
             : ResultWithValue.Success(movies);

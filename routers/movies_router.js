@@ -22,6 +22,9 @@ export default class MoviesRouter {
         MoviesRouter.#router.route("/statistics/:releaseYear")
             .get(MoviesController.getMoviesStatisticsByYearOfRelease);
         
+        MoviesRouter.#router.route("/moviesByGener/:gener")
+            .get(MoviesController.getMoviesByGener);
+        
         MoviesRouter.#router.route("/highest-rated")
             .get(MoviesController.getHighestRatedMovies);
         
