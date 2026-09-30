@@ -56,8 +56,30 @@ export default class MoviesSchema {
             },
             price: {
                 type: Number,
-                require: [true, "price is required field!"]
+                require: [true, "Price is required field!"]
+            },
+            createdBy: {
+                type: String,
+                require: [true, "CreatedBy is required field!"]
             }
+        },
+        {
+            toJSON: {
+                virtuals: true
+            },
+            toObject: {
+                virtuals: true
+            }
+        });
+        
+        MoviesSchema.#schema
+            .virtual("durationInHours")
+            .get( function () {
+                return this.duration / 60;
+            });
+            
+        MoviesSchema.#schema.pre("save", function(next) {
+            this.createdBy = "SERVICE_313_001"
         });
     }
 
