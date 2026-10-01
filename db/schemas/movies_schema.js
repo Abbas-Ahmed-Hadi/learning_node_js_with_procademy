@@ -41,7 +41,14 @@ export default class MoviesSchema {
             },
             geners: {
                 type: [String],
-                require: [true, "Geners is required field!"]
+                require: [true, "Geners is required field!"],
+                enum: {
+                    values: [ 
+                        "Action", "Adventure", "Sci-Fi", "Thriller",
+                        "Crime", "Drama", "Comedy", "Romance", "Biography"
+                    ],
+                    message: "This genera does not exist."
+                }
             },
             directors: {
                 type: [String],
