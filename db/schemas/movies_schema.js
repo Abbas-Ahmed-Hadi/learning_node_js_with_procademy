@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import MoviesMiddleware from "./../middlewares/movies_middlewares.js";
 
 export default class MoviesSchema {
     static #schema;
@@ -78,9 +79,8 @@ export default class MoviesSchema {
                 return this.duration / 60;
             });
             
-        MoviesSchema.#schema.pre("save", function(next) {
-            this.createdBy = "SERVICE_313_001"
-        });
+        MoviesMiddleware
+            .AddMiddlewares(MoviesSchema.#schema);
     }
 
     static get Schema() {
