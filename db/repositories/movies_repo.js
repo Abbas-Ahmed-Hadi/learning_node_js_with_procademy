@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import MoviesModule from "./../modules/movies_module.js";
-import Movie from "./../../entities/movie.js";
 import RandomNumberGenerator from "./../../shared_kernal/random_number_generator.js";
 
 export default class MoviesRepository {

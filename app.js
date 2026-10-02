@@ -17,12 +17,45 @@ app.use(UsersRouter.PathV1, UsersRouter.Router);
 app.use(MoviesRouter.PathV1, MoviesRouter.Router);
 
 app.all('/{*splat}', (req, res, next) => {
-    Response.NotFound(res, new Error(
+    const error = new Error(
         "APIs.UrlNotFound",
         `Can't find '${req.originalUrl}' url on the server`,
-        ErrorType.NotFound));
-    
-    next();
+        ErrorType.NotFound);
+    // Response.NotFound(res, error)
+    next(error);
 });
 
+
+app.use(globalErrorHandler);
+
 export default app;
+
+function globalErrorHandler(error, _, res, next) {
+    
+    switch (error.type) {
+        case ErrorType.NotFound:
+            Response.NotFound(res, error);
+            break;
+        
+        case ErrorType.Failure:
+            Response.Failure(res, error);
+            break;
+        
+        case ErrorType.BadRequest:
+            Response.BadRequest(res, error);
+            break;
+        
+        case ErrorType.Validation:
+            Response.ValidationFailure(res, error);
+            break;
+        
+        case ErrorType.Problem:
+        case ErrorType.Conflict:
+            Response.InternalServerError(res, error);
+            break;
+    }
+    
+    console.log("Global Exception Handler Called.")
+    
+    next();
+}

@@ -4,27 +4,29 @@ export default class MoviesMiddleware {
         movieSchema.pre("save",
             MoviesMiddleware.#AddCreatedBy);
 
-        movieSchema.pre(/^find/g,
+        movieSchema.pre("find",
+            MoviesMiddleware.#FindOnlyValidReleaseDateMovies);
+
+        movieSchema.pre("findOne",
+            MoviesMiddleware.#FindOnlyValidReleaseDateMovies);
+
+        movieSchema.pre("findOneAndUpdate",
             MoviesMiddleware.#FindOnlyValidReleaseDateMovies);
 
         movieSchema.pre("aggregate",
             MoviesMiddleware.#AggregateOnlyValidReleaseDateMovies);
     }
-    
-    static #FindOnlyValidReleaseDateMovies = function(next) {
+
+    static #FindOnlyValidReleaseDateMovies = function() {
         this.find({
-            $match: {
-                releaseDate: {
-                    $lte: new Date()
-                }
+            releaseDate: {
+                $lte: new Date()
             }
         });
-        
-        next();
     }
 
-    static #AggregateOnlyValidReleaseDateMovies = function(next) {
-        this.pipline()
+    static #AggregateOnlyValidReleaseDateMovies = function() {
+        this.pipeline()
             .unshift({
                 $match: {
                     releaseDate: {
@@ -32,13 +34,9 @@ export default class MoviesMiddleware {
                     }
                 }
             });
-
-        next();
     }
 
-    static #AddCreatedBy = function(next) {
+    static #AddCreatedBy = function() {
         this.createdBy = "SERVICE_313_001";
-
-        next();
     }
 }

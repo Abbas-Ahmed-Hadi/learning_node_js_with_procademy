@@ -36,7 +36,7 @@ export default class MoviesSchema {
             },
             createdAt: {
                 type: Date,
-                default: Date.now(),
+                default: Date.now,
                 select: false
             },
             geners: {
@@ -44,8 +44,9 @@ export default class MoviesSchema {
                 require: [true, "Geners is required field!"],
                 enum: {
                     values: [ 
-                        "Action", "Adventure", "Sci-Fi", "Thriller",
-                        "Crime", "Drama", "Comedy", "Romance", "Biography"
+                        "Action", "Adventure", "Biography", 
+                        "Crime", "Comedy", "Drama", "Horror", 
+                        "Thriller", "Sci-Fi", "Romance", 
                     ],
                     message: "This genera does not exist."
                 }
