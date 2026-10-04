@@ -1,3 +1,14 @@
+process.on("uncaughtException", (err) => {
+    console.log("Error:");
+    console.log("   - name:", err.name);
+    console.log("   - message:", err.message);
+    
+    console.log("Unhandled Exception Occured: Server is shutting down...");
+    
+    process.exit(1);
+});
+
+
 import { SERVER_PORT, HOST_NAME, DB_CONN_STR, NODE_ENV } from "./config.js";
 import mongoose from "mongoose";
 import app from "./app.js";
@@ -13,6 +24,20 @@ mongoose.connect(DB_CONN_STR)
         console.log("An Error Occur:", err.message);
     });
 
-app.listen(SERVER_PORT, HOST_NAME, () => {
+const server = app.listen(SERVER_PORT, HOST_NAME, () => {
     console.log("Server Is Started.");
+});
+
+
+process.on("unhandledRejection", (err) => {
+    console.log("Error:");
+    console.log("   - name:", err.name);
+    console.log("   - message:", err.message);
+    
+    console.log("\nUnhandled Rejection Promise Occured: Server is shutting down...");
+    
+    server.close(() => {
+        console.log("Server Is Shutdown");
+        process.exit(1);
+    });
 });
