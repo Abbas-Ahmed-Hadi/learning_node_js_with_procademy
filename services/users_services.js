@@ -1,7 +1,7 @@
 import UsersRepository from "./../db/repositories/users_repo.js";
 import { ResultOnly, ResultWithValue } from "./../shared_kernal/result.js";
-import { Error, ErrorType } from "./../shared_kernal/error.js";
-import UsersErrors from "./../shared_kernal/users_errors.js";
+import { Error, ErrorType } from "./../shared_kernal/errors/error.js";
+import UsersErrors from "./../shared_kernal/errors/users_errors.js";
 
 export default class UsersServices {
     

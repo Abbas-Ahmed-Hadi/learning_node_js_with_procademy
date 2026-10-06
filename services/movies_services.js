@@ -1,7 +1,7 @@
 import MoviesRepository from "./../db/repositories/movies_repo.js";
 import { ResultOnly, ResultWithValue } from "./../shared_kernal/result.js";
-import { Error, ErrorType } from "./../shared_kernal/error.js";
-import MoviesErrors from "./../shared_kernal/movies_errors.js";
+import { Error, ErrorType } from "./../shared_kernal/errors/error.js";
+import MoviesErrors from "./../shared_kernal/errors/movies_errors.js";
 
 export default class MoviesServices {
     

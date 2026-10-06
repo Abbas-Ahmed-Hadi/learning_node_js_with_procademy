@@ -1,4 +1,4 @@
-import { Error } from "./error.js";
+import { Error } from "./errors/error.js";
 
 class ResultOnly {
     #isSuccess;

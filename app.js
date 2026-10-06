@@ -1,5 +1,6 @@
 import express from "express";
 import morgan from "morgan";
+import AuthRouter from "./routers/auth_router.js";
 import UsersRouter from "./routers/users_router.js";
 import MoviesRouter from "./routers/movies_router.js";
 import Response from "./shared_kernal/response.js";
@@ -13,6 +14,7 @@ if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
 }
 
+app.use(AuthRouter.PathV1, AuthRouter.Router);
 app.use(UsersRouter.PathV1, UsersRouter.Router);
 app.use(MoviesRouter.PathV1, MoviesRouter.Router);
 

@@ -1,7 +1,7 @@
 import UsersServices from "./../services/users_services.js";
 import User from "./../entities/user.js";
 import Response from "./../shared_kernal/response.js";
-import { ErrorType } from "./../shared_kernal/error.js";
+import { ErrorType } from "./../shared_kernal/errors/error.js";
 
 export default class UsersController {
     static async getAllUsers(_, res) {
@@ -30,8 +30,11 @@ export default class UsersController {
     static async addUser(req, res) {
         const user = new User(
             null,
-            req.body.userName,
-            req.body.password);
+            req.body.name,
+            req.body.email,
+            req.body.password,
+            req.body.confirmPassword,
+            req.body.photo);
 
         const result = await UsersServices.addUser(user);
 
@@ -47,8 +50,11 @@ export default class UsersController {
 
         const user = new User(
             userId, 
-            req.body.userName,
-            req.body.password);
+            req.body.name,
+            req.body.email,
+            req.body.password,
+            req.body.confirmPassword,
+            req.body.photo);
 
         const result = await UsersServices.updateUserById(userId, user);
 

@@ -1,5 +1,5 @@
 import Response from "./../../shared_kernal/response.js";
-import UsersErrors from "./../../shared_kernal/users_errors.js";
+import UsersErrors from "./../../shared_kernal/errors/users_errors.js";
 import Validator from "./../../shared_kernal/validator.js";
 import ValidatorExtensions from "./../../shared_kernal/validator_extensions.js";
 

@@ -1,7 +1,7 @@
 import Controller from "./controller.js";
 import MoviesServices from "./../services/movies_services.js";
 import Response from "./../shared_kernal/response.js";
-import { ErrorType } from "./../shared_kernal/error.js";
+import { ErrorType } from "./../shared_kernal/errors/error.js";
 import Movie from "./../entities/movie.js";
 
 export default class MoviesController {

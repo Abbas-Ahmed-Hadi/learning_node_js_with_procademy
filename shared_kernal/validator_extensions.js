@@ -1,5 +1,5 @@
-import NormalizedError from "./normalized_error.js";
-import { Error, ErrorType } from "./error.js";
+import NormalizedError from "./errors/normalized_error.js";
+import { Error, ErrorType } from "./errors/error.js";
 
 export default class ValidatorExtensions {
     static NormalizeError(error, fieldName = "") {

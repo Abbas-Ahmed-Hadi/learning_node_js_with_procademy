@@ -1,4 +1,4 @@
-import { ErrorType } from "./error.js";
+import { ErrorType } from "./errors/error.js";
 import ValidationErrors from "./validation_errors.js";
 
 export class ResponseStatus {

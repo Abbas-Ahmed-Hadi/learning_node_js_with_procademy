@@ -1,8 +1,8 @@
 import Response from "./../../shared_kernal/response.js";
-import MoviesErrors from "./../../shared_kernal/movies_errors.js";
+import MoviesErrors from "./../../shared_kernal/errors/movies_errors.js";
 import Validator from "./../../shared_kernal/validator.js";
 import Movie from "./../../entities/movie.js";
-import { Error, ErrorType } from "./../../shared_kernal/error.js";
+import { Error, ErrorType } from "./../../shared_kernal/errors/error.js";
 
 export default class MoviesEndpointsValidator {
 
